@@ -13,3 +13,8 @@ std::unique_ptr<Building> Tower::GetUpgradedBuilding() const {
 int Tower::GetVictoryPoints() const {
   return 3;
 }
+
+Inventory Tower::GenerateResource(Inventory inventory) const {
+  inventory.Multiply(3);
+  return inventory;
+}

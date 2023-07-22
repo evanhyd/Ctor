@@ -23,8 +23,14 @@ bool Inventory::TrySpend(const Inventory& other) {
   return sufficient;
 }
 
-void Inventory::Gain(const Inventory& other) {
+Inventory& Inventory::Add(const Inventory& other) {
   resources += other.resources;
+  return *this;
+}
+
+Inventory& Inventory::Multiply(int multiplier) {
+  resources *= multiplier;
+  return *this;
 }
 
 Inventory::operator std::string() const {

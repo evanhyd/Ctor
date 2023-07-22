@@ -2,17 +2,16 @@
 #define PROPERTY_H
 
 #include <memory>
-#include "observer.h"
 #include "inventory.h"
 
 class Builder;
 class Building;
 class Tile;
 
-class Property : public Observer {
-  Builder* owner;
-  Tile* tile;
+class Property {
+protected:
   std::unique_ptr<Building> building;
+  Builder* owner;
 
 public:
   Builder* GetOwner();
@@ -22,10 +21,8 @@ public:
   bool CanUpgrade(Builder* builder) const;
   void Upgrade(Builder* builder);
 
-  virtual void Notify() override;
-
-  Property(Tile* tile);
-  ~Property();
+  Property(std::unique_ptr<Building> building);
+  virtual ~Property();
 };
 
 #endif

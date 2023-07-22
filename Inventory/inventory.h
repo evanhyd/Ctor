@@ -13,7 +13,8 @@ public:
 	int GetTotal() const;
   bool CanAfford(const Inventory& cost) const;
 	bool TrySpend(const Inventory& other);
-	void Gain(const Inventory& other);
+	Inventory& Add(const Inventory& other);
+  Inventory& Multiply(int mulitplier);
 
   explicit operator std::string() const;
 };

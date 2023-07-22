@@ -1,7 +1,6 @@
 #include "property.h"
 #include "builder.h"
 #include "building.h"
-#include "tile.h"
 #include <cassert>
 
 Builder* Property::GetOwner() {
@@ -30,17 +29,9 @@ void Property::Upgrade(Builder* builder) {
   building = building->GetUpgradedBuilding();
 }
 
-void Property::Notify() {
-
-}
-
-Property::Property(Tile* tile) : tile(tile) {
-  assert(tile && "subscribing to a null subject!");
-  tile->Attach(this);
+Property::Property(std::unique_ptr<Building> building) 
+  : building(std::move(building)) {
+  assert(building && "null building object");
 } 
 
-Property::~Property() {
-  if (tile) {
-    tile->Detach(this);
-  }
-}
+Property::~Property() {}

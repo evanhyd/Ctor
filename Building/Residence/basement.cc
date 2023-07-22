@@ -1,14 +1,18 @@
 #include "basement.h"
 #include "house.h"
 
-Inventory House::GetUpgradeCost() const {
+Inventory Basement::GetUpgradeCost() const {
   return Inventory(0, 0, 2, 3, 0);
 }
 
-std::unique_ptr<Building> House::GetUpgradedBuilding() const {
+std::unique_ptr<Building> Basement::GetUpgradedBuilding() const {
   return std::make_unique<House>();
 }
 
-int House::GetVictoryPoints() const {
+int Basement::GetVictoryPoints() const {
   return 1;
+}
+
+Inventory Basement::GenerateResource(Inventory inventory) const {
+  return inventory;
 }

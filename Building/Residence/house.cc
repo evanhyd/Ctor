@@ -12,3 +12,8 @@ std::unique_ptr<Building> House::GetUpgradedBuilding() const {
 int House::GetVictoryPoints() const {
   return 2;
 }
+
+Inventory House::GenerateResource(Inventory inventory) const {
+  inventory.Multiply(2);
+  return inventory;
+}

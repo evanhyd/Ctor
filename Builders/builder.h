@@ -8,27 +8,32 @@
 class Dice; 
 
 class Builder{
+  ColourEnum colour;
+  Inventory inventory;
+  std::vector<int> roads;
+  std::vector<int> residences;
+  const Dice* dice;
+
 public: 
-    Builder(ColourEnum colour, int victoryPoints); 
-    virtual ~Builder() = 0; 
-    int GetPoints(); 
-    std::string GetStats(); 
-    void UpdateVictoryPoints (int diff); 
-    
-    void TryBuildRes(int index); 
-    void TryBuildRoad(int index); 
-    void BuildRes(int index); 
-    void BuildRoad(int index); 
+  int GetVictoryPoints() const;
+  
 
-    void TryBuyDevCard(int index); 
 
-private: 
-    ColourEnum colour;
-    Inventory resources; 
-    std::vector<int> roads; 
-    std::vector<int> residences; 
-    const Dice* dice;   
-    int victoryPoints; 
+
+
+
+  Builder(ColourEnum colour, int victoryPoints); 
+  virtual ~Builder() = 0; 
+  int GetPoints(); 
+  std::string GetStats(); 
+
+  
+  void TryBuildRes(int index); 
+  void TryBuildRoad(int index); 
+  void BuildRes(int index); 
+  void BuildRoad(int index); 
+
+  void TryBuyDevCard(int index); 
 };
 
 #endif 

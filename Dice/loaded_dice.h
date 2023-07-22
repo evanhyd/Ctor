@@ -9,7 +9,7 @@ class LoadedDice : public Dice {
   virtual int RollImpl() const override;
 
 public:
-  constexpr LoadedDice(int num);
+  explicit constexpr LoadedDice(int num);
 
   static const LoadedDice dice[13];
 };

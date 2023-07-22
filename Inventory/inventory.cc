@@ -2,34 +2,32 @@
 #include <cassert>
 
 constexpr Inventory::Inventory(int brick, int energy, int glass, int heat, int wifi) 
-  : brick(brick), energy(energy), glass(glass), heat(heat), wifi(wifi) {
-    assert(brick >= 0);
-    assert(energy >= 0);
-    assert(glass >= 0);
-    assert(heat >= 0);
-    assert(wifi >= 0);
+  : resources{brick, energy, glass, heat, wifi} {
+  assert((resources >= 0).min());
 }
 
-int Inventory::GetTotal() const{
-  return brick + energy + glass + heat + wifi;
+int Inventory::GetTotal() const {
+  return resources.sum();
+}
+
+bool Inventory::CanAfford(const Inventory& cost) const {
+  return (resources >= cost.resources).min();
 }
 
 bool Inventory::TrySpend(const Inventory& other) {
-  if (brick < other.brick || energy < other.energy || glass < other.glass || heat < other.heat || wifi < other.wifi) {
-    return false;
+  const auto spent = resources - other.resources;
+  const bool sufficient = spent.min() >= 0;
+  if (sufficient) {
+    resources = std::move(spent);
   }
-  brick -= other.brick;
-  energy -= other.energy;
-  glass -= other.glass;
-  heat -= other.heat;
-  wifi -= other.wifi;
-  return true;
+  return sufficient;
 }
 
 void Inventory::Gain(const Inventory& other) {
-  brick += other.brick;
-  energy += other.energy;
-  glass += other.glass;
-  heat += other.heat;
-  wifi += other.wifi;
+  resources += other.resources;
+}
+
+Inventory::operator std::string() const {
+  using namespace std;
+  return to_string(resources[0]) + " " + to_string(resources[1]) + " " + to_string(resources[2]) + " " + to_string(resources[3]) + " " + to_string(resources[4]);
 }

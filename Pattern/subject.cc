@@ -4,19 +4,17 @@
 #include <cassert>
 
 void Subject::Attach(Observer* observer) {
-  assert(std::none_of(observers.begin(), observers.end(), [&](Observer* o) {return o == observer};));
+  assert(std::find(observers.begin(), observers.end(), observer) == observers.end());
   observers.push_back(observer);
 }
 
 void Subject::Detach(Observer* observer) {
-  assert(std::any_of(observers.begin(), observers.end(), [&](Observer* o) {return o == observer};));
+  assert(std::find(observers.begin(), observers.end(), observer) != observers.end());
   observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
 }
 
 void Subject::NotifyAll() {
-  for (Observer* observer : observers) {
-    observer->Notify();
-  }
+  std::for_each(observers.begin(), observers.end(), [](Observer* o) {o->Notify();});
 }
 
-~Subject() {}
+Subject::~Subject() {}

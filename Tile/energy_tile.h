@@ -4,8 +4,9 @@
 #include "tile.h"
 
 class EnergyTile : public Tile {
-public:
-	constexpr EnergyTile(int number);
-	std::string GetTileType() const override;
+  virtual Inventory GetResource() const override;
+	virtual std::string GetTileType() const override;
+
+  using Tile::Tile;
 };
 #endif

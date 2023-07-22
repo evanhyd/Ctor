@@ -3,8 +3,9 @@
 #include "tile.h"
 
 class ParkTile : public Tile {
-public:
-	constexpr ParkTile();
-	std::string GetTileType() const override;
+  virtual Inventory GetResource() const override;
+	virtual std::string GetTileType() const override;
+
+  using Tile::Tile;
 };
 #endif

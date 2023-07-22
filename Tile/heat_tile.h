@@ -3,8 +3,9 @@
 #include "tile.h"
 
 class HeatTile : public Tile {
-public:
-	constexpr HeatTile(int number);
-	std::string GetTileType() const override;
+  virtual Inventory GetResource() const override;
+	virtual std::string GetTileType() const override;
+
+  using Tile::Tile;
 };
 #endif

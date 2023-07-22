@@ -5,15 +5,11 @@
 #include <random>
 
 class FairDice : public Dice {
-
-public:
-  constexpr FairDice();
-
-private:
   virtual int RollImpl() const override;
-  static const std::default_random_engine ENGINE;
 
 public:
+  explicit constexpr FairDice();
+  
   static const FairDice dice;
 };
 

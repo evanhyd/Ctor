@@ -1,15 +1,22 @@
 #ifndef TILE_H
 #define TILE_H
+
 #include <string>
-#include "inventory.h"
 #include "subject.h"
+#include "inventory.h"
 
 class Tile : public Subject {
+protected:
+	const int number;
+
 public:
-	constexpr Tile(int number, const Inventory& resource); 
-	virtual ~Tile();
+  int GetNumber() const;
+  virtual Inventory GetResource() const = 0;
 	virtual std::string GetTileType() const = 0;
-	const int tileNum;
-	const Inventory resource;
+
+  explicit operator std::string() const;
+  
+	explicit constexpr Tile(int tileNumber); 
+	virtual ~Tile();
 };
 #endif

@@ -3,8 +3,9 @@
 #include "tile.h"
 
 class GlassTile : public Tile {
-public:
-	constexpr GlassTile(int number);
-	std::string GetTileType() const override;
+  virtual Inventory GetResource() const override;
+	virtual std::string GetTileType() const override;
+
+  using Tile::Tile;
 };
 #endif

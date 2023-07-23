@@ -15,15 +15,28 @@ class Builder{
   const Dice* dice;
 
 public: 
-  int GetVictoryPoints() const;
+  Inventory& GetInventory();
   
+  explicit Builder(ColourEnum colour); 
+  virtual ~Builder();
 
 
 
 
 
-  Builder(ColourEnum colour, int victoryPoints); 
-  virtual ~Builder() = 0; 
+
+
+
+
+
+
+
+
+
+
+
+
+  int GetVictoryPoints() const;
   int GetPoints(); 
   std::string GetStats(); 
 

@@ -6,7 +6,6 @@
 
 class Builder;
 class Building;
-class Tile;
 
 class Property {
 protected:
@@ -14,14 +13,14 @@ protected:
   Builder* owner;
 
 public:
-  Builder* GetOwner();
-  const Builder* GetOwner() const;
+  Builder& GetOwner();
+  const Builder& GetOwner() const;
 
   Inventory GetUpgradeCost();
-  bool CanUpgrade(Builder* builder) const;
-  void Upgrade(Builder* builder);
+  bool CanUpgrade(Builder& builder) const;
+  void Upgrade(Builder& builder);
 
-  Property(std::unique_ptr<Building> building);
+  explicit Property(std::unique_ptr<Building> building);
   virtual ~Property();
 };
 

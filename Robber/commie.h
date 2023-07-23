@@ -3,10 +3,8 @@
 #include "robber.h"
 
 class Commie : public Robber {
-public:
-	Commie();
-	~Commie();
-	int GetTileIndex() const override;
-	void MoveTo(int tileIndex) override;
+  using Robber::Robber;
+
+  virtual void MoveToImpl(int tileIndex) override;
 };
 #endif

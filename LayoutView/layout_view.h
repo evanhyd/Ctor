@@ -1,11 +1,21 @@
-#ifdef LAYOUT_VIEW_H
+#ifndef LAYOUT_VIEW_H
 #define LAYOUT_VIEW_H
 
-class LayoutView{
-public: 
-    void Render(); 
+#include "observer.h"
+#include "layout.h"
+
+class Layout;
+
+class LayoutView : public Observer {
 protected: 
-    virtual RenderImpl() = 0; 
+  Layout& layout;
+  virtual void RenderImpl() = 0; 
+
+public:
+  void Render(); 
+  
+  explicit LayoutView(Layout& layout);
+  ~LayoutView();
 }; 
 
 #endif 

@@ -3,10 +3,8 @@
 #include "robber.h"
 
 class Geese : public Robber {
-public:
-	Geese();
-	~Geese();
-	int GetTileIndex() const override;
-	void MoveTo(int tileIndex) override;
+  using Robber::Robber;
+
+  virtual void MoveToImpl(int tileIndex) override;
 };
 #endif

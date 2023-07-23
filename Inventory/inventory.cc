@@ -14,23 +14,25 @@ bool Inventory::CanAfford(const Inventory& cost) const {
   return (resources >= cost.resources).min();
 }
 
-bool Inventory::TrySpend(const Inventory& other) {
-  const auto spent = resources - other.resources;
-  const bool sufficient = spent.min() >= 0;
-  if (sufficient) {
-    resources = std::move(spent);
-  }
-  return sufficient;
-}
-
-Inventory& Inventory::Add(const Inventory& other) {
+Inventory& Inventory::operator+=(const Inventory& other) {
   resources += other.resources;
   return *this;
 }
 
-Inventory& Inventory::Multiply(int multiplier) {
-  resources *= multiplier;
+Inventory& Inventory::operator-=(const Inventory& other) {
+  resources -= other.resources;
   return *this;
+}
+
+Inventory& Inventory::operator*=(int mulitplier) {
+  resources *= mulitplier;
+  return *this;
+}
+
+Inventory Inventory::operator*(int mulitplier) {
+  Inventory inv(*this);
+  inv *= mulitplier;
+  return inv;
 }
 
 Inventory::operator std::string() const {

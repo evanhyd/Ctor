@@ -5,26 +5,21 @@
 #include <memory>
 
 class Tile;
-class Road;
-class Residence;
+class Property;
+class ResidenceProperty;
 class Builder;
 class Robber;
 
 class Layout {
-public: 
-	Layout();
-	
-	virtual bool CanBuildRoad(int index) = 0;
-	virtual bool CanBuildRes(int index) = 0;
-	virtual bool BuildRoad(int index) = 0;
-	virtual bool BuildRes(int index) = 0;
-	virtual void MoveRobber(int index) = 0;
-
 protected:
-	std::vector<Tile*> tiles;
-	std::vector<Road*> roads;
-	std::vector<Residence*> residences;
-	std::vector<Builder*> builders;
+	std::vector<std::unique_ptr<Tile>> tiles;
+	std::vector<std::unique_ptr<Property>> roads;
+	std::vector<std::unique_ptr<ResidenceProperty>> residences;
+	std::vector<std::unique_ptr<Builder>> builders;
 	std::unique_ptr<Robber> robber;
+  
+public: 
+	explicit Layout();
+  virtual ~Layout();
 };
 #endif

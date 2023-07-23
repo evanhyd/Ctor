@@ -15,6 +15,5 @@ int Tower::GetVictoryPoints() const {
 }
 
 Inventory Tower::GenerateResource(Inventory inventory) const {
-  inventory.Multiply(3);
-  return inventory;
+  return inventory * 3;
 }

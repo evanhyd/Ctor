@@ -1,9 +1,5 @@
 #include "commie.h"
 
-int Commie::GetTileIndex() const {
-    return tileIndex; 
-}
+void Commie::MoveToImpl(int tileIndex) {
 
-void Commie::MoveTo(int inputTileIndex){
-    tileIndex = inputTileIndex; 
 }

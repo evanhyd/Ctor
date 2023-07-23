@@ -14,6 +14,5 @@ int House::GetVictoryPoints() const {
 }
 
 Inventory House::GenerateResource(Inventory inventory) const {
-  inventory.Multiply(2);
-  return inventory;
+  return inventory * 2;
 }

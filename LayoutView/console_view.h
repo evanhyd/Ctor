@@ -1,17 +1,19 @@
 #ifndef CONSOLE_VIEW_H
 #define CONSOLE_VIEW_H
+
 #include <ostream>
 #include "layout_view.h"
 
+class Layout;
+
 class ConsoleView : public LayoutView {
-public: 
-    ConsoleView(); 
+  std::ostream& buffer;
 
 private: 
-    void RenderImpl() override final; 
+  virtual void RenderImpl() override;
 
 private: 
-    std::ostream& buffer;
+  explicit ConsoleView(Layout& layout, std::ostream& buffer);
 }; 
 
 #endif 

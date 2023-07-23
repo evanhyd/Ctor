@@ -1,6 +1,6 @@
 #include "building.h"
 
-bool Building::CanBuild() const {
+bool Building::CanUpgrade() const {
   return GetUpgradedBuilding() != nullptr;
 }
 

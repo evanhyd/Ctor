@@ -1,12 +1,16 @@
 #ifndef ROBBER_H
 #define ROBBER_H
+
 class Robber {
-public:
-	Robber();
-	virtual ~Robber();
-	virtual int GetTileIndex() const = 0;
-	virtual void MoveTo(int tileIndex) = 0;
 protected:
 	int tileIndex;
+
+  virtual void MoveToImpl(int tileIndex) = 0;
+public:
+	int GetTileIndex() const;
+	void MoveTo(int tileIndex);
+
+	explicit Robber();
+	virtual ~Robber();
 };
 #endif

@@ -4,15 +4,17 @@
 #include "property.h"
 #include "observer.h"
 
+class Tile;
+
 class ResidenceProperty : public Property, public Observer {
-  Tile* tile;
+  Tile& tile;
 
   virtual void Notify() override;
 
 public:
   int GetVictoryPoints() const;
 
-  ResidenceProperty(std::unique_ptr<Building> building, Tile* tile);
+  explicit ResidenceProperty(std::unique_ptr<Building> building, Tile& tile);
   ~ResidenceProperty();
 };
 

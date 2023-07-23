@@ -1,7 +1,7 @@
 #ifndef RESIDENCE_H
 #define RESIDENCE_H
 
-#include "building.h"
+#include "BUilding/building.h"
 
 class Inventory;
 

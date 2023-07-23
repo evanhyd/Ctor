@@ -1,8 +1,8 @@
 #ifndef LAYOUT_VIEW_H
 #define LAYOUT_VIEW_H
 
-#include "observer.h"
-#include "layout.h"
+#include "Observer/observer.h"
+#include "Board/Layout/layout.h"
 
 class Layout;
 

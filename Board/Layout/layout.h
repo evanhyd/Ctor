@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "subject.h"
+#include "Observer/subject.h"
 
 class Tile;
 class Property;
@@ -20,6 +20,8 @@ protected:
 	std::vector<std::unique_ptr<Builder>> builders;
 	std::unique_ptr<Robber> robber;
 
+  std::vector<int> GetAdjacentTiles(int residenceIndex) const;
+  virtual std::vector<int> GetAdjacentResidences(int tileIndex) const;
   virtual void GenerateRandomLayoutImpl();
   
 public:

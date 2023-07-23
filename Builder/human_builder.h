@@ -1,5 +1,6 @@
 #ifndef HUMAN_BUILDER_H
-#define HUMAN_BUILDER_H 
+#define HUMAN_BUILDER_H
+
 #include "builder.h"
 #include "colour_enum.h"
 

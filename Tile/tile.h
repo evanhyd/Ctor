@@ -2,8 +2,8 @@
 #define TILE_H
 
 #include <string>
-#include "subject.h"
-#include "inventory.h"
+#include "Observer/subject.h"
+#include "Inventory/inventory.h"
 
 class Tile : public Subject {
 protected:

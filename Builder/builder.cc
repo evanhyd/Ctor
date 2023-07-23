@@ -1,5 +1,5 @@
-#include "builder.h"
-#include "fair_dice.h"
+#include "Builder/builder.h"
+#include "Dice/fair_dice.h"
 #include <cassert>
 
 Inventory& Builder::GetInventory() {

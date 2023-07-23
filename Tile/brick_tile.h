@@ -1,6 +1,7 @@
 #ifndef BRICK_TILE_H
 #define BRICK_TILE_H
-#include "tile.h"
+
+#include "Tile/tile.h"
 
 class BrickTile : public Tile {
   virtual Inventory GetResource() const override;

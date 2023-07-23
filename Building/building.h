@@ -1,7 +1,7 @@
 #ifndef BUILDING_H
 #define BUILDING_H
 
-#include "inventory.h"
+#include "Inventory/inventory.h"
 #include <memory>
 
 class Building {

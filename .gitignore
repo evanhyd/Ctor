@@ -2,3 +2,5 @@
 *.o
 *.d
 ctor
+build.bat
+*.exe

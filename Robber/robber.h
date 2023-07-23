@@ -10,7 +10,7 @@ public:
 	int GetTileIndex() const;
 	void MoveTo(int tileIndex);
 
-	explicit Robber();
+	explicit Robber(int tileIndex);
 	virtual ~Robber();
 };
 #endif

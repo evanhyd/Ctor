@@ -9,6 +9,6 @@ void Robber::MoveTo(int tileIndex) {
   MoveToImpl(tileIndex);
 }
 
-Robber::Robber() {}
+Robber::Robber(int tileIndex) : tileIndex(tileIndex) {}
 
 Robber::~Robber() {}

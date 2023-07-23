@@ -4,8 +4,7 @@
 #include "colour_enum.h"
 
 class HumanBuilder : public Builder{
-    HumanBuilder(ColourEnum colour, int victoryPoints);
-    ~HumanBuilder() override;  
+  using Builder::Builder;
 }; 
 
 #endif 

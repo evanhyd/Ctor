@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++14 -Wall -g -MMD
+CXXFLAGS=-std=c++20 -Wall -g -MMD
 EXEC=ctor
 CCFILES=$(wildcard *.cc)
 OBJECTS=${CCFILES:.cc=.o}

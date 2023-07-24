@@ -2,51 +2,29 @@
 #define BUILDER_H 
 #include <vector> 
 #include <string>
+#include <map>
 #include "colour_enum.h"
 #include "Inventory/inventory.h"
-   
+
 class Dice; 
 
-class Builder{
+class Builder {
   ColourEnum colour;
   Inventory inventory;
-  std::vector<int> roads;
-  std::vector<int> residences;
+  std::map<int, Property*> roads;
+  std::map<int, ResidenceProperty*> residences;
   const Dice* dice;
 
 public: 
   Inventory& GetInventory();
+  int GetVictoryPoints() const;
+  bool OwnRoad(int roadIndex) const; 
+  bool OwnResidence(int residenceIndex) const; 
   
   explicit Builder(ColourEnum colour); 
   virtual ~Builder();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  int GetVictoryPoints() const;
-  int GetPoints(); 
-  std::string GetStats(); 
-
-  
-  void TryBuildRes(int index); 
-  void TryBuildRoad(int index); 
-  void BuildRes(int index); 
-  void BuildRoad(int index); 
-
-  void TryBuyDevCard(int index); 
+  std::string GetStats();
 };
 
 #endif 

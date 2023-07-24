@@ -2,9 +2,28 @@
 #include "Dice/fair_dice.h"
 #include <cassert>
 
+using namespace std;
+
 Inventory& Builder::GetInventory() {
   return inventory;
 }
+
+int Builder::GetVictoryPoints() {
+  int points = 0;
+  for (const auto& [_, property] : residences) {
+    points  += property->GetVictoryPoints();
+  }
+  return points;
+}
+
+bool Builder::OwnRoad(int roadIndex) const {
+  return roads.contains(roadIndex);
+}
+
+bool Builder::OwnResidence(int residenceIndex) const {
+  return residence.contains(residenceIndex);
+}
+
 
 Builder::Builder(ColourEnum colour)
   : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
@@ -12,35 +31,3 @@ Builder::Builder(ColourEnum colour)
 }
 
 Builder::~Builder() {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-int Builder::GetPoints(){
-  return 0; 
-}
-
-void Builder::TryBuildRes(int index){
-    //todo: 
-}
-
-void Builder::TryBuildRoad(int index){
-    //todo: 
-}
-
-void Builder::BuildRes(int index){
-    //todo: perhaps append/change residence vector 
-}
-
-void Builder::TryBuyDevCard(int index){
-    //todo: perhaps check if you can through inventory resources 
-}

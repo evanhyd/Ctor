@@ -2,7 +2,8 @@
 #define SHOP_H
 
 #include "inventory.h"
-#include "builder.h"
+#include "../Builder/builder.h"
+#include "../Layout/layout.h"
 
 #include <optional> 
 
@@ -16,18 +17,18 @@ public:
 
 	//that's why i suggest we pass the builder reference directly would be easier, so Shop doesn't need layout
 	//but in CanBuildRoad, it has to check the layout again, this is complicated...
-	void BuildRoad(int edgeIndex, ColorEnum player); 
-	void BuildRes(int residenceIndex, ColorEnum player); 
+	void BuildRoad(int edgeIndex, ColourEnum player); 
+	void BuildRes(int residenceIndex, ColourEnum player); 
 	void ImproveRes(int residenceIndex);
-	bool Trade(Inventory& inv, ColorEnum color);
+	bool Trade(Inventory& inv, ColourEnum color);
 
 private:
 
 //just returning a bool tells us basically nothing.
 //make this return std::optional<>, so we know the exact reason why it can't build
 	
-	std::optional<std::string> CanBuildRoad(int edgeIndex, ColorEnum player);
-	std::optional<std::string> CanBuildRes(int residenceIndex, ColorEnum player);
+	std::optional<std::string> CanBuildRoad(int edgeIndex, ColourEnum player);
+	std::optional<std::string> CanBuildRes(int residenceIndex, ColourEnum player);
 
 	const Layout& layout; //then don't need this 
 	

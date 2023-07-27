@@ -5,6 +5,8 @@
 #include <map>
 #include "colour_enum.h"
 #include "../Inventory/inventory.h"
+#include "../Building/property.h"
+#include "../Building/residence_property.h"
    
 class Dice; 
 
@@ -25,6 +27,7 @@ public:
   virtual ~Builder();
 
   std::string GetStats();
+  std::string Builder::GetColour();
 };
 
 #endif 

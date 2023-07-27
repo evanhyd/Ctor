@@ -9,9 +9,8 @@ public:
 	Board();
 	~Board();
 	void Play();
-private: 
 	Layout* layout;
-	Shop shop;
+	Shop* shop;
 };
 
 #endif

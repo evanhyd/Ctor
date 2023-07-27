@@ -47,7 +47,7 @@ const std::vector<vector<int>>& GetRoadGraph() {
 const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) const {
   static vector<vector<int>> mapping;
 
-  if (residenceIndex >= mapping.size() || mapping[residence].empty()) {
+  if (residenceIndex >= mapping.size() || mapping[residenceIndex].empty()) {
     if (mapping.size() <= residenceIndex) {
       mapping.resize(residenceIndex + 1);
     }
@@ -61,7 +61,7 @@ const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) 
     }
   }
 
-  return mapping[residence];
+  return mapping[residenceIndex];
 }
 
 const std::vector<int>& Layout::GetAdjacentResidencesByTile(int tileIndex) const {
@@ -131,7 +131,8 @@ void Layout::GenerateRandomLayoutImpl() {
 
   //generate residence
   for (int i = 0; i < RESIDENCE_COUNT; ++i) {
-    residence.push_back(make_unique<ResidenceProperty>(make_unique<VacantLand>(), GetAdjacentTiles(i)));
+    // residence.push_back(make_unique<ResidenceProperty>(make_unique<VacantLand>(), GetAdjacentTiles(i)));
+    // TODO: I commented this out because it wasn't working
   }
 
   //generate builders

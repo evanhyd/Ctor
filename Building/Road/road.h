@@ -1,7 +1,7 @@
 #ifndef ROAD_H
 #define ROAD_H
 
-#include "Building/building.h"
+#include "../building.h"
 
 class Road : public Building {
   //a transition class that's corresponds to Residence class

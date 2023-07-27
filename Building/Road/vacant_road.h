@@ -1,7 +1,7 @@
 #ifndef VACANT_ROAD_H
 #define VACANT_ROAD_H
 
-#include "Building/Road/road.h"
+#include "road.h"
 
 class VacantRoad : public Road {
   virtual Inventory GetUpgradeCost() const override;

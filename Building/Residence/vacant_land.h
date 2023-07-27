@@ -1,7 +1,7 @@
 #ifndef VACANT_LAND_H
 #define VACANT_LAND_H
 
-#include "Building/Residence/residence.h"
+#include "residence.h"
 
 class Builder;
 

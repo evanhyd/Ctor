@@ -1,7 +1,7 @@
 CXX=g++
 CXXFLAGS=-std=c++20 -Wall -g -MMD
 EXEC=ctor
-CCFILES=$(wildcard **/*.cc) $(wildcard *.cc)
+CCFILES=$(wildcard $(shell find . -name "*.cc"))
 OBJECTS=${CCFILES:.cc=.o}
 DEPENDS=${CCFILES:.cc=.d}
 

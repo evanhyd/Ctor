@@ -13,8 +13,8 @@ protected:
   Builder* owner;
 
 public:
-  Builder& GetOwner();
-  const Builder& GetOwner() const;
+  Builder* GetOwner();
+  const Builder* GetOwner() const;
 
   Inventory GetUpgradeCost();
   bool CanUpgrade(Builder& builder) const;

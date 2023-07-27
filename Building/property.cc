@@ -3,12 +3,12 @@
 #include "building.h"
 #include <cassert>
 
-Builder& Property::GetOwner() {
-  return *owner;
+Builder* Property::GetOwner() {
+  return owner;
 }
 
-const Builder& Property::GetOwner() const {
-  return *owner;
+const Builder* Property::GetOwner() const {
+  return owner;
 }
 
 Inventory Property::GetUpgradeCost() {

@@ -15,13 +15,14 @@ class Robber;
 class Layout : public Subject {
 protected:
 	std::vector<std::unique_ptr<Tile>> tiles;
-	std::vector<std::unique_ptr<Property>> roads;
+	std::vector<std::unique_ptr<Property>> roads; 
 	std::vector<std::unique_ptr<ResidenceProperty>> residences;
 	std::vector<std::unique_ptr<Builder>> builders;
 	std::unique_ptr<Robber> robber;
-
-  std::vector<int> GetAdjacentTiles(int residenceIndex) const;
-  virtual std::vector<int> GetAdjacentResidences(int tileIndex) const;
+  
+  const std::vector<int>& GetAdjacentTilesByResidence(int residenceIndex) const;
+  virtual const std::vector<int>& GetAdjacentResidencesByTile(int tileIndex) const;
+  virtual const std::vector<vector<int>>& GetRoadGraph();
   virtual void GenerateRandomLayoutImpl();
   
 public:

@@ -3,7 +3,7 @@
 #include <vector> 
 #include <string>
 #include "colour_enum.h"
-#include "Inventory/inventory.h"
+#include "../Inventory/inventory.h"
    
 class Dice; 
 

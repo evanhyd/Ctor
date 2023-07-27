@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "Observer/subject.h"
+#include "../../Observer/subject.h"
 
 class Tile;
 class Property;

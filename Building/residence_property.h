@@ -2,7 +2,7 @@
 #define RESIDENCE_PROPERTY_H
 
 #include "property.h"
-#include "observer.h"
+#include "../Observer/observer.h"
 
 class Tile;
 

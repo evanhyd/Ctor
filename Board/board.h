@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "Layout/layout.h"
+#include "../Layout/layout.h"
 #include "shop.h"
 
 class Board {

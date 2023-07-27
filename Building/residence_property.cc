@@ -1,7 +1,7 @@
 #include "residence_property.h"
 #include "Residence/residence.h"
-#include "builder.h"
-#include "tile.h"
+#include "../Builder/builder.h"
+#include "../Tile/tile.h"
 #include <cassert>
 
 void ResidenceProperty::Notify() {

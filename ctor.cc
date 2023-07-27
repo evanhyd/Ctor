@@ -6,4 +6,5 @@ using namespace std;
 
 int main() {
   unique_ptr<Layout> layout = make_unique<Layout>();
+  
 }

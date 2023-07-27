@@ -1,32 +1,17 @@
 #include "builder.h"
 #include "../Dice/fair_dice.h"
-#include <cassert>
 
-Inventory& Builder::GetInventory() {
-  return inventory;
+Builder::Builder(ColourEnum colour, int victoryPoints) : 
+    colour{colour}, resources{0, 0, 0, 0, 0}, dice{&FairDice::dice}, victoryPoints{victoryPoints} {
+
 }
-
-Builder::Builder(ColourEnum colour)
-  : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
-  assert(dice && "dice is null");
-}
-
-Builder::~Builder() {}
-
-
-
-
-
-
-
-
-
-
-
-
 
 int Builder::GetPoints(){
-  return 0; 
+    return victoryPoints; 
+}
+
+void Builder::UpdateVictoryPoints(int diff){
+    victoryPoints += diff; 
 }
 
 void Builder::TryBuildRes(int index){

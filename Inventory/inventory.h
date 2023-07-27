@@ -18,7 +18,10 @@ public:
 
   explicit operator std::string() const;
   
-	explicit constexpr Inventory(int brick, int energy, int glass, int heat, int wifi);
+	explicit 
+  // constexpr 
+  // Removed constexpr because it was causing errors -- Zac
+  Inventory(int brick, int energy, int glass, int heat, int wifi);
 };
 
 #endif

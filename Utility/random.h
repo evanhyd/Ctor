@@ -36,7 +36,8 @@ public:
   template <typename Iterator, typename OutIterator>
   static void Sample(Iterator begin, Iterator end, OutIterator dest, int count) {
     std::sample(begin, end, dest, 1, engine);
-    return result;
+    // return result;
+    // I removed the return statement because it was causing a compiler error -- Zac
   }
 
   /**

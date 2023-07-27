@@ -2,7 +2,7 @@
 #define PROPERTY_H
 
 #include <memory>
-#include "inventory.h"
+#include "../Inventory/inventory.h"
 
 class Builder;
 class Building;

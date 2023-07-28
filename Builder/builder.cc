@@ -32,6 +32,15 @@ bool Builder::CanAffordRoad(int roadIndex){
   return inventory.CanAfford(roads[roadIndex]]->GetUpgradeCost()); 
 } 
   
+void Builder::UpgradeResidence(int residenceIndex){
+  residences[residenceIndex]->Upgrade(*this); 
+}
+
+void Builder::UpgradeRoad(int roadIndex){
+  roads[roadIndex]->Upgrade(*this); 
+}
+
+
 std::string Builder::GetColour() {
   static const std::string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};
   return COLOUR_NAMES[colour];

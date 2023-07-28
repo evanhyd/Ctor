@@ -23,7 +23,10 @@ public:
   bool OwnRoad(int roadIndex) const; 
   bool OwnResidence(int residenceIndex) const; 
   bool CanAffordResidence(int residenceIndex); 
-  bool CanAffordRoad(int roadIndex); 
+  bool CanAffordRoad(int roadIndex);
+  void UpgradeResidence(int residenceIndex); 
+  void UpgradeRoad(int roadIndex);
+
   std::string GetColour();
   std::string GetStats();
   

@@ -215,19 +215,25 @@ optional<string> Shop::CanBuildRes(int residenceIndex, Builder& builder){
 
 optional<string> Shop::BuildRoad(int roadIndex, Builder& builder){
     optional<string> canBuild = CanBuildRoad(roadIndex, builder);
-    if(canBuild->get().substr(0, 14) != "can build road"){
+    if(canBuild->get().find("can build road") != string::npos){
         return canBuild; 
     }  
 
-    //missing the check on the resources 
-
-    //build roads now 
-
-
+    builder.UpgradeRoad(roadIndex); 
 
     return canBuild; 
 }
 
+optional<string> Shop::BuildRes(int residenceIndex, BUilder& builder){
+    optional<string> canBuild = CanBuildRes(residenceIndex, builder); 
+    if(canBuild->get().find("can build residence") != string::npos){
+        return canBuild; 
+    }
+
+    builder.UpgradeResidence(residenceIndex); 
+    
+    return canBuild; 
+}
 
 Shop::Shop(Layout& layout) : layout{layout}{
 

@@ -28,6 +28,8 @@ protected:
 public:
   void GenerateRandomLayout();
   bool ImportLayout(const std::string& fileName);
+  
+  bool OwnResidence(int residenceIndex) const; 
 
 	explicit Layout();
   virtual ~Layout();

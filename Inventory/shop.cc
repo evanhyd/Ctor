@@ -5,8 +5,59 @@
 using namespace std;
 
 optional<string> Shop::CanBuildRoad(int roadIndex, Builder& builder){
-    //need to check if the road slot is empty 
-    //need to iterate through all the builders and check... do I just assume the number of builders won't change? 
+
+    //check road is not already built  
+    for(int player = blue; player <= yellow; ++player){
+
+        std::map<int, Property*>& existingRoads = layout.builder[player].roads; 
+        if(existingRoads.find(roadIndex) != existingRoads.end()){
+            return "can not build road: road is already built"; 
+        }
+    }
+
+    auto roadGraph = layout.GetRoadGraph(); 
+    //check if you have residence nearby 
+    if(builder.OwnResidence(roadGraph[roadIndex][0]) || builder.OwnResidence(roadGraph[roadIndex][1])){
+        return "can build road: have residence nearby"; 
+    }
+
+    //check if you have roads nearby 
+    for(int currRoadIndex = 0; currRoadIndex < layout.ROAD_COUNT; ++currRoadIndex){
+        if(builder.OwnRoad(currRoadIndex)){
+            for(int i = 0; i <= 1; ++i){
+                if(roadGraph[currRoadIndex][i] == roadGraph[roadIndex][i] && 
+                layout.OwnResidence(roadGraph[roadIndex][i]) && !builder.OwnResidence(roadGraph[roadIndex][i])) {
+                    return "can build road: have road nearby"; 
+                }
+
+                if(roadGraph[currRoadIndex][i] == roadGraph[roadIndex][i] && 
+                layout.OwnResidence(roadGraph[currRoadIndex][i]) && !builder.OwnResidence(roadGraph[currRoadIndex][i])) {
+                    return "can build road: have road nearby"; 
+                }
+            }
+        }
+    }
+
+
+    return "can not build road"; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     //checking if roadIndex is available to be built on 
@@ -118,8 +169,37 @@ optional<string> Shop::CanBuildRoad(int roadIndex, Builder& builder){
 
 
 
-bool Shop::CanBuildRes(int index, ColorEnum player){
-    //
+optional<string> Shop::CanBuildRes(int residenceIndex, Builder& builder){
+    //check if residence does not belong to other 
+    for(int player = blue; player <= yellow; ++player){
+        if(player == builder.colour) continue; 
+        
+        if(layout[player].OwnResidence(residenceIndex)){
+            return "can not build residence: residence already owned by another player";  
+        }
+    }
+
+    auto roadGraph = layout.GetRoadGraph(); 
+    //check if you have adjacent residences 
+    for(int currRoadIndex = 0; currRoadIndex < layout.ROAD_COUNT; ++currRoadIndex){
+        if(roadGraph[currRoadIndex][0] == residenceIndex && layout.OwnResidence(roadGraph[currRoadIndex][1])){
+            return "can not build residence: there exists adjacent residence"; 
+        }
+
+        if(roadGraph[currRoadIndex][1] == residenceIndex && layout.OwnResidence(roadGraph[currRoadIndex][0])){
+            return "can not build residence: there exists adjacent residence"; 
+        }
+    }
+
+    //check if you have adjacent roads 
+    for(int currRoadIndex = 0; currRoadIndex < layout.ROAD_COUNT; ++currRoadIndex){
+        if((roadGraph[currRoadIndex][0] == residenceIndex || roadGraph[currRoadIndex][0] == residenceIndex) && 
+        builder.OwnRoad(currRoadIndex)){
+            return "can build residence"; 
+        }
+    }
+
+    return "can not build residence"; 
 }
     
 

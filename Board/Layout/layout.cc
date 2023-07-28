@@ -152,6 +152,12 @@ bool Layout::ImportLayout(const string& fileName) {
   return false;
 }
 
+
+bool OwnResidence(int residenceIndex) const{
+  return residence[residenceIndex] != nullptr; 
+}
+
+
 Layout::Layout() {}
 
 Layout::~Layout() {}

@@ -8,7 +8,7 @@ class FairDice : public Dice {
   virtual int RollImpl() const override;
 
 public:
-  explicit constexpr FairDice();
+  explicit FairDice();
   
   static const FairDice dice;
 };

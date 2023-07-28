@@ -4,7 +4,7 @@ int LoadedDice::RollImpl() const {
   return target;
 }
 
-constexpr LoadedDice::LoadedDice(int num) : Dice(), target(num) {}
+LoadedDice::LoadedDice(int num) : Dice(), target(num) {}
 
 const LoadedDice LoadedDice::dice[13] = {
   LoadedDice(0),

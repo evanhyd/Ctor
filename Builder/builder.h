@@ -22,12 +22,11 @@ public:
   int GetVictoryPoints() const;
   bool OwnRoad(int roadIndex) const; 
   bool OwnResidence(int residenceIndex) const; 
+  std::string GetColour();
+  std::string GetStats();
   
   explicit Builder(ColourEnum colour); 
   virtual ~Builder();
-
-  std::string GetStats();
-  std::string Builder::GetColour();
 };
 
 #endif 

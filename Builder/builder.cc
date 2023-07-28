@@ -25,18 +25,12 @@ bool Builder::OwnResidence(int residenceIndex) const {
 }
 
 std::string Builder::GetColour() {
-  switch(colour) {
-    case ColourEnum::BLUE:
-      return "Blue";
-    case ColourEnum::RED:
-      return "Red";
-    case ColourEnum::ORANGE:
-      return "Orange";
-    case ColourEnum::YELLOW:
-      return "Yellow";
-    default:
-      return "Invalid";
-  }
+  static const std::string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};
+  return COLOUR_NAMES[colour];
+}
+
+std::string Builder::GetStats() {
+  return "to do";
 }
 
 Builder::Builder(ColourEnum colour)

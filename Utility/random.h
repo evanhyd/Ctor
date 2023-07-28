@@ -8,7 +8,7 @@
   A wrapper class that seeds the engine at the start of the program.
 */
 class Random {
-  static const std::default_random_engine engine;
+  static std::default_random_engine engine;
 
   Random() = delete;
 

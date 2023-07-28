@@ -4,6 +4,8 @@ EXEC=ctor
 CCFILES=$(wildcard $(shell find . -name "*.cc"))
 OBJECTS=${CCFILES:.cc=.o}
 DEPENDS=${CCFILES:.cc=.d}
+NUM_THREADS = 4
+MAKEFLAGS = -j$(NUM_THREADS)
 
 ${EXEC}: ${OBJECTS}
 	${CXX} ${OBJECTS} -o ${EXEC}

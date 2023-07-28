@@ -12,9 +12,80 @@
 #include "../../Utility/random.h"
 
 using namespace std;
-const std::vector<vector<int>>& GetRoadGraph() {
+
+const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) const {
+  /**
+    Returns the indices of tiles that's around the residence given by the residence index.
+    This is the inverse of GetAdjacentResidencesByTile().
+  */
+  static vector<vector<int>> mapping;
+  
+  if (residenceIndex >= static_cast<int>(mapping.size())) {
+    mapping.resize(residenceIndex + 1);
+  }
+
+  if (mapping[residenceIndex].empty()) {
+    
+    //not in cache, compute the tiles
+    for (int i = 0; i < TILE_COUNT; ++i) {
+      const auto& res = GetAdjacentResidencesByTile(i);
+      if (any_of(res.begin(), res.end(), [&](int index) { return index == residenceIndex; })) {
+        mapping[residenceIndex].push_back(i);
+      }
+    }
+  }
+
+  return mapping[residenceIndex];
+}
+
+const std::vector<int>& Layout::GetAdjacentResidencesByTile(int tileIndex) const {
   /*
-    This is an incident edge graph representation of the roads. It stores the both ends of residenceIndex.
+    Returns the indices of residence that surrounds the tile given by the tile index.
+    Each tile should have at least one nearby residence, and vice versa.
+
+    Ex:
+    Tile index 9 has residence 20, 21, 26, 27, 32, 33 around it.
+    mapping[9] = {20, 21, 26, 27, 32, 33}
+
+    |20|--27--|21|
+      |         |
+     31    9   32
+      |  BRICK  |
+    |26|   2  |27|
+      |         |
+     39        40
+      |         |
+    |32|--44--|33|
+  */
+  static const vector<vector<int>> mapping = {
+    {0, 1, 3, 4, 8, 0},
+    {2, 3, 7, 8, 13, 14},
+    {4, 5, 9, 10, 15, 16},
+    {6, 7, 12, 13, 18, 19},
+    {8, 9, 14, 15, 20, 21},
+    {10, 11, 16, 17, 22, 23},
+    {13, 14, 19, 20, 25, 26},
+    {15, 16, 21, 22, 27, 28},
+    {18, 19, 24, 25, 30, 31},
+    {20, 21, 26, 27, 32, 33},
+    {22, 23, 28, 29, 34, 35},
+    {25, 26, 31, 32, 37, 38},
+    {27, 28, 33, 34, 39, 40},
+    {30, 31, 36, 37, 42, 43},
+    {32, 33, 38, 39, 44, 45},
+    {34, 35, 40, 41, 46, 47},
+    {37, 38, 43, 44, 48, 49},
+    {39, 40, 45, 46, 50, 51},
+    {44, 45, 49, 50, 52, 53},
+  };
+
+  return mapping[tileIndex];
+}
+
+const vector<vector<int>>& Layout::GetRoadGraph() {
+  /*
+    Return the incident edge graph representation of the roads.
+    It stores the residenceIndex that the edge is incident to.
 
     Ex:
     road 27 is a path from residence 20 to residence 21
@@ -44,54 +115,13 @@ const std::vector<vector<int>>& GetRoadGraph() {
   return mapping;
 }
 
-const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) const {
-  static vector<vector<int>> mapping;
+void Layout::GenerateTiles(unsigned seed) {
 
-  if (residenceIndex >= mapping.size() || mapping[residenceIndex].empty()) {
-    if (mapping.size() <= residenceIndex) {
-      mapping.resize(residenceIndex + 1);
-    }
-    
-    //not in cache, compute the tiles
-    for (int i = 0; i < TILE_COUNT; ++i) {
-      const auto& res = GetAdjacentResidencesByTile(i);
-      if (any_of(res.begin(), res.end(), [&](int index) { return index == residenceIndex; })) {
-        mapping[residenceIndex].push_back(i);
-      }
-    }
-  }
-
-  return mapping[residenceIndex];
-}
-
-const std::vector<int>& Layout::GetAdjacentResidencesByTile(int tileIndex) const {
-  static const vector<vector<int>> mapping = {
-    {0, 1, 3, 4, 8, 0},
-    {2, 3, 7, 8, 13, 14},
-    {4, 5, 9, 10, 15, 16},
-    {6, 7, 12, 13, 18, 19},
-    {8, 9, 14, 15, 20, 21},
-    {10, 11, 16, 17, 22, 23},
-    {13, 14, 19, 20, 25, 26},
-    {15, 16, 21, 22, 27, 28},
-    {18, 19, 24, 25, 30, 31},
-    {20, 21, 26, 27, 32, 33},
-    {22, 23, 28, 29, 34, 35},
-    {25, 26, 31, 32, 37, 38},
-    {27, 28, 33, 34, 39, 40},
-    {30, 31, 36, 37, 42, 43},
-    {32, 33, 38, 39, 44, 45},
-    {34, 35, 40, 41, 46, 47},
-    {37, 38, 43, 44, 48, 49},
-    {39, 40, 45, 46, 50, 51},
-    {44, 45, 49, 50, 52, 53},
-  };
-
-  return mapping[tileIndex];
-}
+  //this function has a bug
+  //it should generate the graph based on the seeding
+  //therefore it shouldn't rely on the utility Random class that seeds based on the current time.
 
 
-void Layout::GenerateRandomLayoutImpl() {
   /*
    3 WIFI, 3 HEAT, 4 BRICK, 4 ENERGY, 4 GLASS, 1 PARK
    Park tile has tile number 7
@@ -100,11 +130,7 @@ void Layout::GenerateRandomLayoutImpl() {
    Remaining tiles values: 3, 4, 5, 6, 8, 9, 10, 11
   */
 
-  //generate tile numbers
-
-  //this function has a bug
-  //it should generate the graph based on the seeding
-  //therefore it shouldn't rely on the utility Random class that seeds based on the current time.
+  //generate the tile numbers
   vector<int> tileNums(TILE_COUNT);
   tileNums[0] = 7;
   tileNums[1] = 2;
@@ -113,40 +139,46 @@ void Layout::GenerateRandomLayoutImpl() {
   Random::Sample(candidates.begin(), candidates.end(), tileNums.begin() + 3, TILE_COUNT - 3);
   Random::Shuffle(tileNums.begin() + 1, tileNums.end());
   
-  //generate tiles
-  tiles = {
-    make_unique<ParkTile>(tileNums[0]),
-    make_unique<WifiTile>(tileNums[1]), make_unique<WifiTile>(tileNums[2]), make_unique<WifiTile>(tileNums[3]),
-    make_unique<HeatTile>(tileNums[4]), make_unique<HeatTile>(tileNums[5]), make_unique<HeatTile>(tileNums[6]),
-    make_unique<BrickTile>(tileNums[7]), make_unique<BrickTile>(tileNums[8]), make_unique<BrickTile>(tileNums[9]), make_unique<BrickTile>(tileNums[10]),
-    make_unique<EnergyTile>(tileNums[11]), make_unique<EnergyTile>(tileNums[12]), make_unique<EnergyTile>(tileNums[13]), make_unique<EnergyTile>(tileNums[14]),
-    make_unique<GlassTile>(tileNums[15]), make_unique<GlassTile>(tileNums[16]), make_unique<GlassTile>(tileNums[17]), make_unique<GlassTile>(tileNums[18]),
-  };
+  //assign tile numbers to tiles, then shuffle the physical structure order
+  tiles.push_back(make_unique<ParkTile>(tileNums[0]));
+  tiles.push_back(make_unique<WifiTile>(tileNums[1])); tiles.push_back(make_unique<WifiTile>(tileNums[2])); tiles.push_back(make_unique<WifiTile>(tileNums[3]));
+  tiles.push_back(make_unique<HeatTile>(tileNums[4])); tiles.push_back(make_unique<HeatTile>(tileNums[5])); tiles.push_back(make_unique<HeatTile>(tileNums[6]));
+  tiles.push_back(make_unique<BrickTile>(tileNums[7])); tiles.push_back(make_unique<BrickTile>(tileNums[8])); tiles.push_back(make_unique<BrickTile>(tileNums[9])); make_unique<BrickTile>(tileNums[10]),
+  tiles.push_back(make_unique<EnergyTile>(tileNums[11])); tiles.push_back(make_unique<EnergyTile>(tileNums[12])); tiles.push_back(make_unique<EnergyTile>(tileNums[13])); make_unique<EnergyTile>(tileNums[14]),
+  tiles.push_back(make_unique<GlassTile>(tileNums[15])); tiles.push_back(make_unique<GlassTile>(tileNums[16])); tiles.push_back(make_unique<GlassTile>(tileNums[17])); make_unique<GlassTile>(tileNums[18]),
   Random::Shuffle(tiles.begin(), tiles.end());
+}
 
-  //generate roads
+void Layout::GenerateRoads() {
   generate_n(back_inserter(roads), ROAD_COUNT, []() { 
     return make_unique<Property>(make_unique<VacantRoad>());
   });
+}
 
-  //generate residence
+void Layout::GenerateResidences() {
   for (int i = 0; i < RESIDENCE_COUNT; ++i) {
     // residence.push_back(make_unique<ResidenceProperty>(make_unique<VacantLand>(), GetAdjacentTiles(i)));
     // TODO: I commented this out because it wasn't working
   }
+}
 
-  //generate builders
+void Layout::GenerateBuilders() {
   for (int i = 0; i < BUILDER_COUNT; ++i) {
     builders.push_back(make_unique<HumanBuilder>(ColourEnum(i)));
   }
+}
 
-  //generate robber
+void Layout::GenerateRobber() {
   const int parkTileIndex = distance(tiles.begin(), find_if(tiles.begin(), tiles.end(), [](auto& tile) { return tile->GetNumber() == 7; }));
   robber = make_unique<Geese>(parkTileIndex);
 }
 
-void Layout::GenerateRandomLayout() {
-  GenerateRandomLayoutImpl();
+void Layout::GenerateLayout(unsigned seed) {
+  GenerateTiles(seed);
+  GenerateRoads();
+  GenerateResidences();
+  GenerateBuilders();
+  GenerateRobber();
 }
 
 bool Layout::ImportLayout(const string& fileName) {

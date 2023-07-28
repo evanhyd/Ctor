@@ -5,6 +5,7 @@
 using namespace std;
 
 optional<string> Shop::CanBuildRoad(int roadIndex, Builder& builder){
+    
 
     //check road is not already built  
     for(int player = blue; player <= yellow; ++player){
@@ -13,6 +14,10 @@ optional<string> Shop::CanBuildRoad(int roadIndex, Builder& builder){
         if(existingRoads.find(roadIndex) != existingRoads.end()){
             return "can not build road: road is already built"; 
         }
+    }
+
+    if(!builder.CanAffordRoad()){
+        reutrn "can not build road: you can't afford it"; 
     }
 
     auto roadGraph = layout.GetRoadGraph(); 
@@ -191,6 +196,11 @@ optional<string> Shop::CanBuildRes(int residenceIndex, Builder& builder){
         }
     }
 
+    //check if you can afford residence 
+    if(!builder.CanAffordResidence(residenceIndex)){
+        return "can not build residence: you can't afford it"; 
+    }
+
     //check if you have adjacent roads 
     for(int currRoadIndex = 0; currRoadIndex < layout.ROAD_COUNT; ++currRoadIndex){
         if((roadGraph[currRoadIndex][0] == residenceIndex || roadGraph[currRoadIndex][0] == residenceIndex) && 
@@ -203,13 +213,19 @@ optional<string> Shop::CanBuildRes(int residenceIndex, Builder& builder){
 }
     
 
-void Shop::BuildRoad(int index, ColorEnum player){
-    if(!CanBuildRoad(index, player)){
-        return; 
-    }
+optional<string> Shop::BuildRoad(int roadIndex, Builder& builder){
+    optional<string> canBuild = CanBuildRoad(roadIndex, builder);
+    if(canBuild->get().substr(0, 14) != "can build road"){
+        return canBuild; 
+    }  
 
-    //shop needs access to layout to notify that something has been built 
-    //shop needs access to player to notify them to add built road to their array 
+    //missing the check on the resources 
+
+    //build roads now 
+
+
+
+    return canBuild; 
 }
 
 

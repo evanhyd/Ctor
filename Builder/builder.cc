@@ -24,6 +24,14 @@ bool Builder::OwnResidence(int residenceIndex) const {
   return residences.find(residenceIndex) != residences.end();
 }
 
+bool Builder::CanAffordResidence(int residenceIndex){
+  return inventory.CanAfford(residences[residenceIndex]->GetUpgradeCost()); 
+}
+
+bool Builder::CanAffordRoad(int roadIndex){
+  return inventory.CanAfford(roads[roadIndex]]->GetUpgradeCost()); 
+} 
+  
 std::string Builder::GetColour() {
   static const std::string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};
   return COLOUR_NAMES[colour];

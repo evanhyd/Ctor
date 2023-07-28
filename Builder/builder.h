@@ -22,6 +22,8 @@ public:
   int GetVictoryPoints() const;
   bool OwnRoad(int roadIndex) const; 
   bool OwnResidence(int residenceIndex) const; 
+  bool CanAffordResidence(int residenceIndex); 
+  bool CanAffordRoad(int roadIndex); 
   std::string GetColour();
   std::string GetStats();
   

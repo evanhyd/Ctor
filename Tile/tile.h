@@ -16,7 +16,7 @@ public:
 
   explicit operator std::string() const;
   
-	explicit constexpr Tile(int tileNumber); 
+	explicit Tile(int tileNumber); 
 	virtual ~Tile();
 };
 #endif

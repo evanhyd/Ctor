@@ -1,8 +1,6 @@
 #include "inventory.h"
 #include <cassert>
 
-// constexpr 
-// Removed this because it was causing errors -- Zac
 Inventory::Inventory(int brick, int energy, int glass, int heat, int wifi) 
   : resources{brick, energy, glass, heat, wifi} {
   assert((resources >= 0).min());

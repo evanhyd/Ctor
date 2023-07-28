@@ -8,7 +8,7 @@ Inventory& Builder::GetInventory() {
   return inventory;
 }
 
-int Builder::GetVictoryPoints() {
+int Builder::GetVictoryPoints() const {
   int points = 0;
   for (const auto& [_, property] : residences) {
     points  += property->GetVictoryPoints();
@@ -17,13 +17,21 @@ int Builder::GetVictoryPoints() {
 }
 
 bool Builder::OwnRoad(int roadIndex) const {
-  return roads.contains(roadIndex);
+  return roads.find(roadIndex) != roads.end();
 }
 
 bool Builder::OwnResidence(int residenceIndex) const {
-  return residence.contains(residenceIndex);
+  return residences.find(residenceIndex) != residences.end();
 }
 
+std::string Builder::GetColour() {
+  static const std::string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};
+  return COLOUR_NAMES[colour];
+}
+
+std::string Builder::GetStats() {
+  return "to do";
+}
 
 Builder::Builder(ColourEnum colour)
   : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {

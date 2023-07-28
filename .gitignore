@@ -2,5 +2,5 @@
 *.o
 *.d
 ctor
-build.bat
+win_build.sh
 *.exe

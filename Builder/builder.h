@@ -5,6 +5,8 @@
 #include <map>
 #include "colour_enum.h"
 #include "../Inventory/inventory.h"
+#include "../Building/property.h"
+#include "../Building/residence_property.h"
    
 class Dice; 
 
@@ -20,11 +22,11 @@ public:
   int GetVictoryPoints() const;
   bool OwnRoad(int roadIndex) const; 
   bool OwnResidence(int residenceIndex) const; 
+  std::string GetColour();
+  std::string GetStats();
   
   explicit Builder(ColourEnum colour); 
   virtual ~Builder();
-
-  std::string GetStats();
 };
 
 #endif 

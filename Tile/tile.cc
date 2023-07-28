@@ -8,6 +8,6 @@ Tile::operator std::string() const {
   return GetTileType() + " " + std::to_string(number);
 }
 
-constexpr Tile::Tile(int tileNumber) : Subject(), number(tileNumber) {}
+Tile::Tile(int tileNumber) : Subject(), number(tileNumber) {}
 
 Tile::~Tile() {}

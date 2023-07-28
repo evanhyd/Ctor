@@ -2,7 +2,6 @@
 #define LAYOUT_VIEW_H
 
 #include "../../Observer/observer.h"
-#include "../../Board/Layout/layout.h"
 
 class Layout;
 

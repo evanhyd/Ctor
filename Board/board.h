@@ -1,17 +1,19 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "../Layout/layout.h"
-#include "shop.h"
+#include <memory>
+
+class Layout;
+class Shop;
 
 class Board {
+	std::unique_ptr<Layout> layout;
+	std::unique_ptr<Shop> shop;
+
 public:
-	Board();
-	~Board();
 	void Play();
-private: 
-	Layout* layout;
-	Shop shop;
+  
+	Board(std::unique_ptr<Layout> layout, std::unique_ptr<Shop> shop);
 };
 
 #endif

@@ -150,15 +150,14 @@ void Layout::GenerateTiles(unsigned seed) {
 }
 
 void Layout::GenerateRoads() {
-  generate_n(back_inserter(roads), ROAD_COUNT, []() { 
-    return make_unique<Property>(make_unique<VacantRoad>());
-  });
+  for (int i = 0; i < ROAD_COUNT; ++i) {
+    roads.push_back(make_unique<Property>(make_unique<VacantRoad>()));
+  }
 }
 
 void Layout::GenerateResidences() {
   for (int i = 0; i < RESIDENCE_COUNT; ++i) {
-    // residence.push_back(make_unique<ResidenceProperty>(make_unique<VacantLand>(), GetAdjacentTiles(i)));
-    // TODO: I commented this out because it wasn't working
+    residences.push_back(make_unique<ResidenceProperty>(make_unique<VacantLand>()));
   }
 }
 
@@ -173,23 +172,43 @@ void Layout::GenerateRobber() {
   robber = make_unique<Geese>(parkTileIndex);
 }
 
+void Layout::SetUpConnection() {
+  //make residences subscribe to tiles
+  for (int tileIndex = 0; tileIndex < TILE_COUNT; ++tileIndex) {
+    for (int residenceIndex : GetAdjacentResidencesByTile(tileIndex)) {
+      tiles[tileIndex]->Attach(residences[residenceIndex].get());
+    }
+  }
+}
+
 void Layout::GenerateLayout(unsigned seed) {
   GenerateTiles(seed);
   GenerateRoads();
   GenerateResidences();
   GenerateBuilders();
   GenerateRobber();
+  SetUpConnection();
 }
 
 bool Layout::ImportLayout(const string& fileName) {
   return false;
 }
 
-
-bool OwnResidence(int residenceIndex) const{
-  return residence[residenceIndex] != nullptr; 
+const std::vector<std::unique_ptr<Tile>>& Layout::GetTiles() const{
+  return tiles; 
 }
 
+const std::vector<std::unique_ptr<Property>>& Layout::GetRoads() const {
+  return roads; 
+}
+
+const std::vector<std::unique_ptr<ResidenceProperty>>& Layout::GetResidences() const {
+  return residences;
+}
+
+const std::vector<std::unique_ptr<Builder>>& Layout::GetBuilders() const {
+  return builders;
+}
 
 Layout::Layout() {}
 

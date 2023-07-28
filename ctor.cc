@@ -1,9 +1,11 @@
 #include <iostream>
 #include <memory>
-#include "Board/Layout/layout.h"
+#include "Board/board.h"
 
 using namespace std;
 
 int main() {
-  unique_ptr<Layout> layout = make_unique<Layout>();
+  unique_ptr<Board> board = make_unique<Board>();
+  board->Start();
+  return 0;
 }

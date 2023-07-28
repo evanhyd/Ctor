@@ -3,18 +3,15 @@
 
 #include "property.h"
 #include "../Observer/observer.h"
+#include "../Inventory/inventory.h"
 
-class Tile;
-
-class ResidenceProperty : public Property, public Observer {
-  Tile& tile;
-
-  virtual void Notify() override;
+class ResidenceProperty : public Property, public Observer<Inventory> {
+  virtual void Notify(const Inventory&) override;
 
 public:
   int GetVictoryPoints() const;
 
-  explicit ResidenceProperty(std::unique_ptr<Building> building, Tile& tile);
+  explicit ResidenceProperty(std::unique_ptr<Building> building);
   ~ResidenceProperty();
 };
 

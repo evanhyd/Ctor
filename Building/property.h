@@ -17,7 +17,7 @@ public:
   const Builder* GetOwner() const;
 
   Inventory GetUpgradeCost();
-  bool CanUpgrade(Builder& builder) const;
+  bool CanUpgradeToNextTier() const;
   void Upgrade(Builder& builder);
 
   explicit Property(std::unique_ptr<Building> building);

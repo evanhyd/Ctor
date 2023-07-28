@@ -19,14 +19,12 @@ class Builder {
 
 public: 
   Inventory& GetInventory();
+  const Inventory& GetInventory() const;
   int GetVictoryPoints() const;
   bool OwnRoad(int roadIndex) const; 
   bool OwnResidence(int residenceIndex) const; 
-  bool CanAffordResidence(int residenceIndex); 
-  bool CanAffordRoad(int roadIndex);
-  void UpgradeResidence(int residenceIndex); 
-  void UpgradeRoad(int roadIndex);
-
+  void AddRoad(int index, Property& property);
+  void AddResidence(int index, ResidenceProperty& property);
   std::string GetColour();
   std::string GetStats();
   

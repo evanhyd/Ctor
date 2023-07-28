@@ -8,6 +8,10 @@ Inventory& Builder::GetInventory() {
   return inventory;
 }
 
+const Inventory& Builder::GetInventory() const {
+  return inventory;
+}
+
 int Builder::GetVictoryPoints() const {
   int points = 0;
   for (const auto& [_, property] : residences) {
@@ -24,22 +28,15 @@ bool Builder::OwnResidence(int residenceIndex) const {
   return residences.find(residenceIndex) != residences.end();
 }
 
-bool Builder::CanAffordResidence(int residenceIndex){
-  return inventory.CanAfford(residences[residenceIndex]->GetUpgradeCost()); 
+void Builder::AddRoad(int index, Property& property) {
+  assert(!roads.count(index));
+  roads[index] = &property;
 }
 
-bool Builder::CanAffordRoad(int roadIndex){
-  return inventory.CanAfford(roads[roadIndex]]->GetUpgradeCost()); 
-} 
-  
-void Builder::UpgradeResidence(int residenceIndex){
-  residences[residenceIndex]->Upgrade(*this); 
+void Builder::AddResidence(int index, ResidenceProperty& property) {
+  assert(!residences.count(index));
+  residences[index] = &property;
 }
-
-void Builder::UpgradeRoad(int roadIndex){
-  roads[roadIndex]->Upgrade(*this); 
-}
-
 
 std::string Builder::GetColour() {
   static const std::string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};

@@ -15,9 +15,8 @@ Inventory Property::GetUpgradeCost() {
   return building->GetUpgradeCost();
 }
 
-bool Property::CanUpgrade(Builder& builder) const {
-  //purchsable if it is unowned or owned by the builder AND the builder can afford it
-  return (!owner || owner == &builder) && building->CanUpgrade() && builder.GetInventory().CanAfford(building->GetUpgradeCost());
+bool Property::CanUpgradeToNextTier() const {
+  return building->CanUpgradeToNextTier();
 }
 
 void Property::Upgrade(Builder& builder) {

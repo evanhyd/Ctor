@@ -5,7 +5,7 @@
 #include "../Observer/subject.h"
 #include "../Inventory/inventory.h"
 
-class Tile : public Subject {
+class Tile : public Subject<Inventory> {
 protected:
 	const int number;
 

@@ -1,6 +1,6 @@
 #include "building.h"
 
-bool Building::CanUpgrade() const {
+bool Building::CanUpgradeToNextTier() const {
   return GetUpgradedBuilding() != nullptr;
 }
 

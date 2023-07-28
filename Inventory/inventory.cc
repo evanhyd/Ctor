@@ -1,5 +1,9 @@
 #include "inventory.h"
 #include <cassert>
+#include <string>
+#include <map>
+
+using namespace std;
 
 Inventory::Inventory(int brick, int energy, int glass, int heat, int wifi) 
   : resources{brick, energy, glass, heat, wifi} {
@@ -29,10 +33,14 @@ Inventory& Inventory::operator*=(int mulitplier) {
   return *this;
 }
 
-Inventory Inventory::operator*(int mulitplier) {
-  Inventory inv(*this);
-  inv *= mulitplier;
-  return inv;
+Inventory operator*(Inventory inventory, int multiplier) {
+  inventory *= multiplier;
+  return inventory;
+}
+
+Inventory operator*(int multiplier, Inventory inventory) {
+  inventory *= multiplier;
+  return inventory;
 }
 
 Inventory::operator std::string() const {

@@ -1,9 +1,9 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-
 #include <memory>
 #include <map>
+#include <string>
 #include <functional>
 #include "shop.h"
 #include "View/view.h"
@@ -26,6 +26,8 @@ class Board : Subject<std::string> {
   //consider moving it into a commmand class.
   std::map<std::string, std::function<Code()>> beginTurnCMD;
   std::map<std::string, std::function<Code()>> duringTurnCMD;
+
+  virtual void InitializeCommandMapping();
 
   //4 stages of the game
   void BeginGame();

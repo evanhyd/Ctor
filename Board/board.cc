@@ -8,14 +8,30 @@
 #include "../Dice/fair_dice.h"
 #include "../Inventory/inventory.h"
 #include <iostream>
-#include <memory>
-#include <map>
 #include <exception>
+#include <utility>
 
 using namespace std;
 
 Board::Board()
   : layout(make_unique<Layout>()), shop(make_unique<Shop>()), view(make_unique<StreamView>(cout)) {
+}
+
+void Board::InitializeCommandMapping() {
+  beginTurnCMD["load"] = bind(&Board::CommandLoad, this);
+  beginTurnCMD["fair"] = bind(&Board::CommandFair, this);
+  beginTurnCMD["roll"] = bind(&Board::CommandRoll, this);
+
+  duringTurnCMD["board"] = bind(&Board::CommandBoard, this);
+  duringTurnCMD["status"] = bind(&Board::CommandStatus, this);
+  duringTurnCMD["residences"] = bind(&Board::CommandResidences, this);
+  duringTurnCMD["build-road"] = bind(&Board::CommandBuildRoad, this);
+  duringTurnCMD["build-res"] = bind(&Board::CommandBuildRes, this);
+  duringTurnCMD["improve"] = bind(&Board::CommandImprove, this);
+  duringTurnCMD["trade"] = bind(&Board::CommandTrade, this);
+  duringTurnCMD["next"] = bind(&Board::CommandNext, this);
+  duringTurnCMD["save"] = bind(&Board::CommandSave, this);
+  duringTurnCMD["help"] = bind(&Board::CommandHelp, this);
 }
 
 void Board::Play() {
@@ -110,9 +126,9 @@ Board::Code Board::EndOfGame() {
 
     for_each(input.begin(), input.end(), [](char& c) {c = tolower(c);});
     if (input == "yes") {
-      return Code::END_STAGE;
-    } else if (input == "no") {
       return Code::SUCCESS;
+    } else if (input == "no") {
+      return Code::END_STAGE;
     } else {
       NotifyAll("That wasn't yes or no.\n");
     }

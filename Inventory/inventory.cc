@@ -33,6 +33,11 @@ Inventory& Inventory::operator*=(int multiplier) {
   return *this;
 }
 
+Inventory operator+(Inventory inv1, Inventory inv2) {
+  inv1 += inv2;
+  return inv1;
+}
+
 Inventory operator*(Inventory inventory, int multiplier) {
   inventory *= multiplier;
   return inventory;

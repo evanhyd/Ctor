@@ -213,37 +213,46 @@ Board::Code Board::CommandTrade() {
   string colour, give, take;
   cin >> colour >> give >> take;
 
-  Inventory give_inventory = ParseResourceToInventory(give);
-  if (give_inventory.GetTotal() == 0) {
-    cout << "Invalid give resource" << endl;
-    continue;
-  }
-  Inventory take_inventory = ParseResourceToInventory(take);
-  if (take_inventory.GetTotal() == 0) {
-    cout << "Invalid take resource" << endl;
-    continue;
-  }
-  if (give == take) {
-    cout << "Can't give and take same resource" << endl;
-    continue;
-  }
-  give_inventory -= take_inventory;
-  int builder_index = 0;
+  //convert colour to camel case
+  for_each(colour.begin(), colour.end(), [](char& c) { c = tolower(c); });
+  colour[0] = toupper(colour[0]);
 
-  if (colour == builder->GetColour()) {
-    cout << "Can't trade with ya self" << endl;
-    continue;
+  //try to find the builder
+  const auto& builders = layout->GetBuilders();
+  int receiverIndex = distance(builders.begin(), find_if(builders.begin(), builders.end(), [&](const auto& b) {
+    return b->GetColour() == colour;
+  }));
+
+  if (receiverIndex >= builders.size()) {
+    NotifyAll("Can't trade with a non-existed builder!\n");
   }
 
-  if (colour == "Blue") builder_index = 0;
-  else if (colour == "Red") builder_index = 1;
-  else if (colour == "Orange") builder_index = 2;
-  else if (colour == "Yellow") builder_index = 3;
-  else {
-    cout << "Invalid colour" << endl;
-    continue;
+  if (receiverIndex == playerIndex) {
+    NotifyAll("Can't trade with yourself!\n");
   }
-  if (!shop->Trade(*builder, *layout->GetBuilder(builder_index), give_inventory)) cout << "Failed to trade" << endl;
+
+  //parse the trading offer
+  Inventory trade = ParseResourceToInventory(give) + ParseResourceToInventory(take);
+  if (trade.GetTotal() != 2) {
+    NotifyAll("Invalid trade. It must contain two distinct types of resources.\n");
+    return Code::SUCCESS;
+  }
+
+  NotifyAll(Format("%v offers %v one %v for one %v.\n Does %v accept this offer?\n", 
+  builders[playerIndex]->GetColour(),
+  builders[receiverIndex]->GetColour(),
+  give, take, builders[receiverIndex]->GetColour()));
+
+  NotifyAll("> ");
+  string response;
+  cin >> response;
+  for_each(response.begin(), response.end(), [](char& c) { c = tolower(c); });
+  if (response == "yes") {
+    auto error = shop->Trade(*builders[playerIndex], *builders[receiverIndex], trade);
+    if (error) {
+      NotifyAll(error.value());
+    }
+  }
   return Code::SUCCESS;
 }
 

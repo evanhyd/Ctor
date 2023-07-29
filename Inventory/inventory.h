@@ -19,6 +19,7 @@ public:
   explicit Inventory(int brick, int energy, int glass, int heat, int wifi);
 };
 
+Inventory operator+(Inventory inv1, Inventory inv2);
 Inventory operator*(Inventory inventory, int multiplier);
 Inventory operator*(int multiplier, Inventory inventory);
 

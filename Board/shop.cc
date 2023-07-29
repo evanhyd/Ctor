@@ -8,21 +8,22 @@ using namespace std;
 const std::string Shop::NOT_VALID_BUILD_ERROR_MSG = "You cannot build here.";
 const std::string Shop::NOT_SUFFICIENT_RESOURCES_ERROR_MSG = "You do not have enough resources.";
 
-void Shop::BroadcastMessage(const std::string& message) const {
-  
-}
-
-void Shop::PurchaseAndUpgrade(Builder& builder, Property& property) const {
-  builder.GetInventory() -= property.GetUpgradeCost();
+void Shop::PurchaseAndUpgrade(Builder& builder, Property& property, bool initialPlacement) const {
+  if (!initialPlacement) {
+    builder.GetInventory() -= property.GetUpgradeCost();
+  }
   property.Upgrade(builder);
 }
 
-std::optional<std::string> Shop::CanBuildRoad(Builder& builder, Layout& layout, int roadIndex) const {
-  Assert(0 <= roadIndex && roadIndex < int(layout.GetRoads().size()), Format("road index out of bound %v", roadIndex));
-
+Shop::Error Shop::CanBuildRoad(Builder& builder, Layout& layout, int roadIndex) const {
   const auto& roadGraph = layout.GetRoadGraph();
   const auto& residences = layout.GetResidences();
-  const auto& roads = layout.GetRoads(); 
+  const auto& roads = layout.GetRoads();
+
+  //check index bound
+  if (roadIndex < 0 || roadIndex >= int(roads.size())) {
+    return NOT_VALID_BUILD_ERROR_MSG;
+  }
 
   //check the road has no owner
   if (roads[roadIndex]->GetOwner()) {
@@ -68,28 +69,24 @@ std::optional<std::string> Shop::CanBuildRoad(Builder& builder, Layout& layout, 
   return {};
 }
 
-std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement = false) const{
-  Assert(0 <= residenceIndex && residenceIndex < int(layout.GetResidences().size()), Format("residence index out of bound %v", residenceIndex));
-
-  if(initialPlacement){
-    if(layout.GetResidences()[residenceIndex]->GetOwner()){
-      return NOT_VALID_BUILD_ERROR_MSG; 
-    }
-    return {}; 
-  }
-
+Shop::Error Shop::CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement) const{
   const auto& roadGraph = layout.GetRoadGraph(); 
   const auto& residences = layout.GetResidences(); 
   const auto& roads = layout.GetRoads();
   const auto& property = residences[residenceIndex];
 
+  //check index bound
+  if (residenceIndex < 0 || residenceIndex >= int(residences.size())) {
+    return NOT_VALID_BUILD_ERROR_MSG;
+  }
+
   //check if not owned by anyone    
-  if(property->GetOwner()) {
+  if (property->GetOwner()) {
     return NOT_VALID_BUILD_ERROR_MSG;
   }
 
   //check there's no adjacent property
-  for(int i = 0; i < int(roads.size()); ++i){
+  for (int i = 0; i < int(roads.size()); ++i){
     if((roadGraph[i][0] == residenceIndex && residences[roadGraph[i][1]]->GetOwner()) ||
        (roadGraph[i][1] == residenceIndex && residences[roadGraph[i][0]]->GetOwner())) {
       return NOT_VALID_BUILD_ERROR_MSG; 
@@ -103,23 +100,27 @@ std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& lay
   });
 
   if (!hasAdjacent) {
-    return NOT_VALID_BUILD_ERROR_MSG; 
+    return NOT_VALID_BUILD_ERROR_MSG;
   }
 
   //make sure the housing is affordable
-  if(!builder.GetInventory().CanAfford(property->GetUpgradeCost())) {
+  if(!initialPlacement && !builder.GetInventory().CanAfford(property->GetUpgradeCost())) {
     return NOT_SUFFICIENT_RESOURCES_ERROR_MSG;
   }
 
   return {};
 }
 
-std::optional<std::string> Shop::CanImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const {
-  Assert(0 <= residenceIndex && residenceIndex < int(layout.GetResidences().size()), Format("residence index out of bound %v", residenceIndex));
+Shop::Error Shop::CanImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const {
+  const auto& residences = layout.GetResidences();
 
-  const auto& property = layout.GetResidences()[residenceIndex]; 
+  //check index bound
+  if (residenceIndex < 0 || residenceIndex >= int(residences.size())) {
+    return NOT_VALID_BUILD_ERROR_MSG;
+  }
 
   //must be owned and have next tier
+  const auto& property = residences[residenceIndex]; 
   if (property->GetOwner() != &builder || property->CanUpgradeToNextTier()) {
     return NOT_VALID_BUILD_ERROR_MSG;
   }
@@ -131,51 +132,52 @@ std::optional<std::string> Shop::CanImproveResidence(Builder& builder, Layout& l
   return {};
 }
 
-bool Shop::CanTrade(Builder& instigator, Builder& subject, const Inventory& trade) const {
-  return instigator.GetInventory().CanAfford(trade) && subject.GetInventory().CanAfford(trade * -1);
+Shop::Error Shop::CanTrade(Builder& instigator, Builder& subject, const Inventory& trade) const {
+  if (instigator.GetInventory().CanAfford(trade) && subject.GetInventory().CanAfford(trade * -1)) {
+    return {};
+  }
+  return NOT_SUFFICIENT_RESOURCES_ERROR_MSG;
 }
 
-
-bool Shop::BuildRoad(Builder& builder, Layout& layout, int roadIndex) const {
+Shop::Error Shop::BuildRoad(Builder& builder, Layout& layout, int roadIndex) const {
   if (auto error = CanBuildRoad(builder, layout, roadIndex); error) {
-    BroadcastMessage(error.value());
-    return false;
+    return error;
   }
 
   const auto& property = layout.GetRoads()[roadIndex];
   PurchaseAndUpgrade(builder, *property);
   builder.AddRoad(roadIndex, *property);
-  return true;
+  return {};
 }
 
-bool Shop::BuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement) const {
+Shop::Error Shop::BuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement) const {
   if (auto error = CanBuildResidence(builder, layout, residenceIndex, initialPlacement); error) {
-    BroadcastMessage(error.value());
-    return false;
+    return error;
   }
+
   const auto& property = layout.GetResidences()[residenceIndex];
   PurchaseAndUpgrade(builder, *property);
   builder.AddResidence(residenceIndex, *property);
-  return true;
+  return {};
 }
 
-bool Shop::ImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const {
+Shop::Error Shop::ImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const {
   if (auto error = CanImproveResidence(builder, layout, residenceIndex); error) {
-    BroadcastMessage(error.value());
-    return false;
+    return error;
   }
+
   //only improve, does not add to the property set
   PurchaseAndUpgrade(builder, *layout.GetResidences()[residenceIndex]);
-  return true;
+  return {};
 }
 
-bool Shop::Trade(Builder& instigator, Builder& subject, const Inventory& trade) const {
-  if (CanTrade(instigator, subject, trade)) {
-    instigator.GetInventory() -= trade; 
-    subject.GetInventory() += trade; 
-    return true; 
+Shop::Error Shop::Trade(Builder& instigator, Builder& subject, const Inventory& trade) const {
+  if (auto error = CanTrade(instigator, subject, trade); error) {
+    return error;
   }
-  return false; 
+  instigator.GetInventory() -= trade; 
+  subject.GetInventory() += trade; 
+  return {}; 
 }
 
 Shop::~Shop() {}

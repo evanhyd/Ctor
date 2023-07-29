@@ -1,12 +1,16 @@
 #include "board.h"
-#include "Layout/layout.h"
 #include "shop.h"
-#include "../Builder/builder.h"
+#include "Layout/layout.h"
 #include "View/stream_view.h"
+#include "../Builder/builder.h"
 #include "../Utility/print.h"
+#include "../Dice/loaded_dice.h"
+#include "../Dice/fair_dice.h"
+#include "../Inventory/inventory.h"
 #include <iostream>
 #include <memory>
 #include <map>
+#include <exception>
 
 using namespace std;
 
@@ -14,192 +18,279 @@ Board::Board()
   : layout(make_unique<Layout>()), shop(make_unique<Shop>()), view(make_unique<StreamView>(cout)) {
 }
 
-
-void Board::Print() {
-	// TODO: print layout
-  cout << "board" << endl;
-}
-
-void Board::Start() {
-  layout->GenerateLayout(69420);
-
-  int vertex;
-  bool successful_placement = false;
-  bool reversed = false;
-  int i = 0;
-  Print();
-  while (i > 0 || !reversed) {
-    if (i == layout->GetBuilders().size()) {
-      reversed = true;
-      i--;
-    }
-    std::unique_ptr<Builder>& builder = layout->GetBuilder(i);
-    successful_placement = false;
-	cout << "here" << endl;
-	cout << builder->GetColour() << endl;
-	cout << "here2" << endl;
-    while (!successful_placement) {
-      cout << "Builder " << builder->GetColour() << ", where do you want to build a basement" << endl;
-      cin >> vertex;
-      successful_placement = shop->BuildResidence(*builder, *layout, vertex, true);
-    }
-    if (reversed) i--;
-    else i++;
-  }
-}
-
 void Board::Play() {
+  while (true) {
+    BeginGame();
 
-  bool won = false;
-  int winner_index = 0;
-  while (!won) {
-    for (int i = 0; i < layout->GetBuilders().size(); i++) {
-      unique_ptr<Builder> &builder = layout->GetBuilder(i);
-      if (Turn(builder)) {
-        won = true;
-        winner_index = i;
+    for (const int PLAYER_COUNT = layout->GetBuilders().size();; playerIndex = (playerIndex + 1)%PLAYER_COUNT) {
+      BeginTurn();
+      if (DuringTurn() == Code::END_STAGE) {
         break;
       }
     }
+
+    if (EndOfGame() == Code::END_STAGE) {
+      break;
+    }
   }
-  Win(layout->GetBuilder(winner_index));
 }
 
-bool Board::Turn(unique_ptr<Builder> &builder) {
-	string command;
-	Print();
-	cout << "Builder " << builder->GetColour() << "'s turn." << endl;
-	cout << builder->GetStats() << endl;
-	while (true) {
-		cout << "> ";
-		cin >> command;
-		if (command == "load") {
-			
-		} else if (command == "fair") {
+void Board::BeginGame() {
+  const auto& builders = layout->GetBuilders();
+  for (playerIndex = 0; playerIndex < int(builders.size()); ++playerIndex) {
+    auto& builder = builders[playerIndex];
+    NotifyAll(Format("Builder %v, where do you want to build a basement?\n", builder->GetColour()));
 
-		} else if (command == "roll") {
+    while (builder->OwnedResidenceCount() < 1) {
+      NotifyAll("> ");
+      CommandBuildRes();
+    }
+    CommandBoard();
+  }
 
-		} else {
-			cout << "Invalid command." << endl;
-			continue;
-		}
-		break;
-	}
-	while (true) {
-    	cout << "> ";
-		cin >> command;
-		if (command == "board") { 
-			Print();
-		} else if (command == "status") {
-			cout << builder->GetStats() << endl;
-		} else if (command == "residences") {
-			cout << builder->GetBuildings() << endl;
-		} else if (command == "build-road") {
-			int roadIndex;
-			cin >> roadIndex;
-			shop->BuildRoad(*builder, *layout, roadIndex);
-		} else if (command == "build-res") {
-			int vertex;
-			cin >> vertex;
-		  if (shop->BuildResidence(*builder, *layout, vertex) && Won(builder)) return true;
-		} else if (command == "improve") {
-			int vertex;
-			cin >> vertex;
-			if (shop->ImproveResidence(*builder, *layout, vertex) && Won(builder)) return true;
-		} else if (command == "trade") {
-			string colour;
-			string give;
-			string take;
-			cin >> colour >> give >> take;
-      Inventory give_inventory = GetInventory(give);
-      if (give_inventory.GetTotal() == 0) {
-				cout << "Invalid give resource" << endl;
-				continue;
-      }
-      Inventory take_inventory = GetInventory(take);
-      if (take_inventory.GetTotal() == 0) {
-				cout << "Invalid take resource" << endl;
-				continue;
-      }
-			if (give == take) {
-        cout << "Can't give and take same resource" << endl;
-        continue;
-      }
-      give_inventory -= take_inventory;
-      int builder_index = 0;
+  for (playerIndex = int(builders.size()) - 1; playerIndex >= 0; --playerIndex) {
+    auto& builder = builders[playerIndex];
+    NotifyAll(Format("Builder %v, where do you want to build a basement?\n", builder->GetColour()));
 
-      if (colour == builder->GetColour()) {
-        cout << "Can't trade with ya self" << endl;
-        continue;
-      }
-
-			if (colour == "Blue") builder_index = 0;
-			else if (colour == "Red") builder_index = 1;
-			else if (colour == "Orange") builder_index = 2;
-			else if (colour == "Yellow") builder_index = 3;
-			else {
-				cout << "Invalid colour" << endl;
-				continue;
-			}
-      if (!shop->Trade(*builder, *layout->GetBuilder(builder_index), give_inventory)) cout << "Failed to trade" << endl;
-		} else if (command == "next") {
-			return false;
-		} else if (command == "save") {
-			// TODO	Save
-		} else if (command == "help") {
-      CommandHelp();
-		} else {
-			cout << "Invalid command." << endl;
-		}
-	}
+    while (builder->OwnedResidenceCount() < 2) {
+      NotifyAll("> ");
+      CommandBuildRes();
+    }
+    CommandBoard();
+  }
 }
 
-void Board::Win(unique_ptr<Builder> &builder) {
-  cout << "Builder " << builder->GetColour() << " has won!" << endl;
-  cout << "Would you like to play again?" << endl;
-  cout << "yes/no : ";
-  string input;
+void Board::BeginTurn() {
+  const auto& builder = layout->GetBuilder(playerIndex);
+  NotifyAll(Format("Builder %v's turn.\n%v", builder->GetColour(), builder->GetStats()));
+
   while (true) {
-    cin >> input;
-    if (input == "yes" || input == "Yes") return Reset();
-    else if (input == "no" || input == "No") return;
-    else cout << "That wasn't yes or no. Enter yes/no : ";
+    try {
+      NotifyAll("> ");
+      string cmd;
+      cin >> cmd;
+      if (beginTurnCMD[cmd]() == Code::END_STAGE) {
+        break;
+      }
+    } catch (const bad_function_call& error) {
+      NotifyAll("Invalid command.");
+    } catch (const exception& error) {
+      Assert(false, error.what());
+    };
   }
+}
+
+Board::Code Board::DuringTurn() {
+  while (true) {
+    try {
+      NotifyAll("> ");
+      string cmd;
+      cin >> cmd;
+      Code retCode = duringTurnCMD[cmd]();
+      if (HasWon()) {
+        return Code::END_STAGE;
+      }
+      if (retCode == Code::END_STAGE) {
+        break;
+      }
+    } catch (const bad_function_call& error) {
+      NotifyAll("Invalid command.");
+    } catch (const exception& error) {
+      Assert(false, error.what());
+    };
+  }
+  return Code::SUCCESS;
+}
+
+Board::Code Board::EndOfGame() {
+  NotifyAll(Format("Builder %v has won!\n", layout->GetBuilder(playerIndex)->GetColour()));
+  while (true) {
+    NotifyAll("Would you like to play again? yes/no\n> ");
+    string input; cin >> input;
+
+    for_each(input.begin(), input.end(), [](char& c) {c = tolower(c);});
+    if (input == "yes") {
+      return Code::END_STAGE;
+    } else if (input == "no") {
+      return Code::SUCCESS;
+    } else {
+      NotifyAll("That wasn't yes or no.\n");
+    }
+  }
+}
+
+// BEGINNING OF TURN STAGE
+Board::Code Board::CommandLoad() {
+  NotifyAll("Input a roll between 2 and 12:\n");
+  while (true) {
+    NotifyAll("> ");
+    int load;
+    if ((cin >> load) && 2 <= load && load <= 12) {
+      layout->GetBuilder(playerIndex)->SetDice(LoadedDice::dice[load]);
+      break;
+    }
+    NotifyAll("Invalid roll.\n");
+  }
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandFair() {
+  layout->GetBuilder(playerIndex)->SetDice(FairDice::dice);
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandRoll() {
+  return Code::SUCCESS;
+}
+
+
+//DURING THE TURN
+Board::Code Board::CommandBoard() {
+
+}
+
+Board::Code Board::CommandStatus() {
+  for (const auto& builder : layout->GetBuilders()) {
+    NotifyAll(builder->GetStats());
+  }
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandResidences() {
+  NotifyAll(layout->GetBuilder(playerIndex)->GetResidences());
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandBuildRoad() {
+  auto& builder = layout->GetBuilder(playerIndex);
+  int roadIndex;
+  if (!(cin >> roadIndex)) {
+    roadIndex = -1;
+    cin.ignore('\n');
+    cin.clear();
+  }
+
+  if (auto error = shop->BuildRoad(*builder, *layout, roadIndex); error) {
+    NotifyAll(error.value());
+  }
+
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandBuildRes() {
+  auto& builder = layout->GetBuilder(playerIndex);
+  int residenceIndex;
+  if (!(cin >> residenceIndex)) {
+    residenceIndex = -1;
+    cin.ignore('\n');
+    cin.clear();
+  }
+
+  if (auto error = shop->BuildResidence(*builder, *layout, residenceIndex, builder->OwnedResidenceCount() < 2); error) {
+    NotifyAll(error.value());
+  }
+
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandImprove() {
+  auto& builder = layout->GetBuilder(playerIndex);
+  int residenceIndex;
+  if (!(cin >> residenceIndex)) {
+    residenceIndex = -1;
+    cin.ignore('\n');
+    cin.clear();
+  }
+
+  if (auto error = shop->ImproveResidence(*builder, *layout, residenceIndex); error) {
+    NotifyAll(error.value());
+  }
+
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandTrade() {
+  string colour, give, take;
+  cin >> colour >> give >> take;
+
+  Inventory give_inventory = ParseResourceToInventory(give);
+  if (give_inventory.GetTotal() == 0) {
+    cout << "Invalid give resource" << endl;
+    continue;
+  }
+  Inventory take_inventory = ParseResourceToInventory(take);
+  if (take_inventory.GetTotal() == 0) {
+    cout << "Invalid take resource" << endl;
+    continue;
+  }
+  if (give == take) {
+    cout << "Can't give and take same resource" << endl;
+    continue;
+  }
+  give_inventory -= take_inventory;
+  int builder_index = 0;
+
+  if (colour == builder->GetColour()) {
+    cout << "Can't trade with ya self" << endl;
+    continue;
+  }
+
+  if (colour == "Blue") builder_index = 0;
+  else if (colour == "Red") builder_index = 1;
+  else if (colour == "Orange") builder_index = 2;
+  else if (colour == "Yellow") builder_index = 3;
+  else {
+    cout << "Invalid colour" << endl;
+    continue;
+  }
+  if (!shop->Trade(*builder, *layout->GetBuilder(builder_index), give_inventory)) cout << "Failed to trade" << endl;
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandNext() {
+  return Code::END_STAGE;
+}
+
+Board::Code Board::CommandSave() {
+  return Code::SUCCESS;
+}
+
+Board::Code Board::CommandHelp() {
+  NotifyAll(
+  string("Valid commands:\n") +
+  "board\n" +
+  "status\n" +
+  "build-road <edge#>\n" +
+  "build-res <housing#>\n" +
+  "improve <housing#>\n" +
+  "trade <colour> <give> <take>\n" +
+  "next\n" +
+  "save <file>\n" +
+  "help\n");
+  return Code::SUCCESS;
+}
+
+Inventory Board::ParseResourceToInventory(string resource) {
+  static const map<string, Inventory> mp = {
+    {"brick", Inventory{1, 0, 0, 0, 0}},
+    {"energy", Inventory{0, 1, 0, 0, 0}},
+    {"glass", Inventory{0, 0, 1, 0, 0}},
+    {"heat", Inventory{0, 0, 0, 1, 0}},
+    {"wifi", Inventory{0, 0, 0, 0, 1}},
+  };
+
+  for_each(resource.begin(), resource.end(), [](char& c) {c = tolower(c);});
+  if (auto result = mp.find(resource); result != mp.end()) {
+    return result->second;
+  }
+  return Inventory{0, 0, 0, 0, 0};
+}
+
+bool Board::HasWon() {
+  return layout->GetBuilder(playerIndex)->GetVictoryPoints() >= 10;
 }
 
 void Board::Reset() {
   layout = make_unique<Layout>();
-  Start();
-}
-
-bool Board::Won(std::unique_ptr<Builder> &builder) {
-  return builder->GetVictoryPoints() >= 10;
-}
-
-Inventory Board::GetInventory(string resource) {
-  static map<string, Inventory> mp = {
-    {"Brick", Inventory{1, 0, 0, 0, 0}},
-    {"Energy", Inventory{0, 1, 0, 0, 0}},
-    {"Glass", Inventory{0, 0, 1, 0, 0}},
-    {"Heat", Inventory{0, 0, 0, 1, 0}},
-    {"Wifi", Inventory{0, 0, 0, 0, 1}},
-  };
-
-  if (mp.find(resource) != mp.end()) {
-    return mp.find(resource)->second;
-  }
-  else return Inventory{0, 0, 0, 0, 0};
-}
-
-void Board::CommandHelp() const {
-  cout << "Valid commands:" << endl;
-  cout << "board" << endl;
-  cout << "status" << endl;
-  cout << "build-road <edge#>" << endl;
-  cout << "build-res <housing#>" << endl;
-  cout << "improve <housing#>" << endl;
-  cout << "trade <colour> <give> <take>" << endl;
-  cout << "next" << endl;
-  cout << "save <file>" << endl;
-  cout << "help" << endl;
+  //to do: generalize layout in a systematic way
 }

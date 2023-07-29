@@ -3,26 +3,60 @@
 
 
 #include <memory>
+#include <map>
+#include <functional>
+#include "shop.h"
 #include "View/view.h"
 #include "Layout/layout.h"
-#include "shop.h"
+#include "../Observer/subject.h"
 
-class Board {
+class Board : Subject<std::string> {
+  enum class Code : int {
+    SUCCESS,
+    END_STAGE,
+  };
+
 	std::unique_ptr<Layout> layout;
 	std::unique_ptr<Shop> shop;
 	std::unique_ptr<View> view;
 
-	void CommandHelp() const;
+  int playerIndex;
+  //command set should be initialize dynamically
+  //so we can add more commands if we are going to do bonus
+  //consider moving it into a commmand class.
+  std::map<std::string, std::function<Code()>> beginTurnCMD;
+  std::map<std::string, std::function<Code()>> duringTurnCMD;
+
+  //4 stages of the game
+  void BeginGame();
+  void BeginTurn();
+  Code DuringTurn();
+  Code EndOfGame();
+
+  //beginning of turn
+  Code CommandLoad();
+  Code CommandFair();
+  Code CommandRoll();
+
+  //during the turn
+  Code CommandBoard();
+  Code CommandStatus();
+  Code CommandResidences();
+  Code CommandBuildRoad();
+  Code CommandBuildRes();
+  Code CommandImprove();
+  Code CommandTrade();
+  Code CommandNext();
+  Code CommandSave();
+  Code CommandHelp();
+
+
+	Inventory ParseResourceToInventory(std::string resource);
+  bool HasWon();
 
 public:
-	void Start();
 	void Play();
-	bool Turn(std::unique_ptr<Builder> &builder); // returns if player has won
-	void Print();
-	void Win(std::unique_ptr<Builder> &builder);
-	bool Won(std::unique_ptr<Builder> &builder);
 	void Reset();
-	Inventory GetInventory(std::string resource);
   
 	Board();
 };

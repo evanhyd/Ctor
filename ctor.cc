@@ -6,6 +6,6 @@ using namespace std;
 
 int main() {
   unique_ptr<Board> board = make_unique<Board>();
-  board->Start();
+  board->Play();
   return 0;
 }

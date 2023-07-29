@@ -39,6 +39,14 @@ void Builder::AddResidence(int index, ResidenceProperty& property) {
   residences[index] = &property;
 }
 
+int Builder::OwnedRoadCount() const {
+  return roads.size();
+}
+
+int Builder::OwnedResidenceCount() const {
+  return residences.size();
+}
+
 int Builder::Roll(){
   return dice->Roll(); 
 }
@@ -56,7 +64,7 @@ string Builder::GetStats() const {
   return Format("%v has %v building points, {}.", GetColour(), GetVictoryPoints(), string(inventory));
 }
 
-string Builder::GetBuildings() const {
+string Builder::GetResidences() const {
   string buildings = GetColour() + " has built:\n"; 
   for(const auto& [index, property] : residences) {
     buildings += to_string(index) + ' ' + string(*(property))[1] + "\n"; 

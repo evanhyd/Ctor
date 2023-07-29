@@ -27,13 +27,15 @@ public:
   bool OwnResidence(int residenceIndex) const; 
   void AddRoad(int index, Property& property);
   void AddResidence(int index, ResidenceProperty& property);
+  int OwnedRoadCount() const;
+  int OwnedResidenceCount() const;
 
   int Roll();
   void SetDice(const Dice& newDice);
   
   std::string GetColour() const;
   std::string GetStats() const;
-  std::string GetBuildings() const;
+  std::string GetResidences() const;
   
   explicit Builder(ColourEnum colour); 
   virtual ~Builder();

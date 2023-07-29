@@ -10,7 +10,6 @@ class Inventory {
 public:
 	int GetTotal() const;
   bool CanAfford(const Inventory& cost) const;
-
   
   Inventory& operator+=(const Inventory& other);
   Inventory& operator-=(const Inventory& other);

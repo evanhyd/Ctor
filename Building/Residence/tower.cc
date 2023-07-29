@@ -1,8 +1,8 @@
 #include "tower.h"
-#include <cassert>
+#include "../../Utility/print.h"
 
 Inventory Tower::GetUpgradeCost() const {
-  assert(!("attempted to upgrade a tower"));
+  Assert(false, "attempted to upgrade a tower");
   return Inventory(0, 0, 0, 0, 0);
 }
 

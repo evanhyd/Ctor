@@ -1,9 +1,9 @@
 #ifndef SUBJECT_H
 #define SUBJECT_H
+#include "observer.h"
+#include "../Utility/print.h"
 #include <vector>
 #include <algorithm>
-#include <cassert>
-#include "observer.h"
 #include <iostream>
 
 template <typename T>
@@ -12,12 +12,12 @@ class Subject {
 
 public:
   void Attach(Observer<T>* observer) { 
-    assert(none_of(observers.begin(), observers.end(), [&](auto o) { return o == observer; }));
+    Assert(none_of(observers.begin(), observers.end(), [&](auto o) { return o == observer; }), Format("attached duplicated observer %v", observer));
     observers.push_back(observer);
   }
 
   void Detach(Observer<T>* observer) {
-    assert(any_of(observers.begin(), observers.end(), [&](auto o) { return o == observer; }));
+    Assert(any_of(observers.begin(), observers.end(), [&](auto o) { return o == observer; }, Format("attempted to remove non-existed observer %v", observer)));
     observers.erase(remove(observers.begin(), observers.end(), observer), observers.end());
   }
 

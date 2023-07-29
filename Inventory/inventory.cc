@@ -1,14 +1,13 @@
 #include "inventory.h"
-#include <cassert>
 #include <string>
 #include <map>
-#include "../Utility/format.h"
+#include "../Utility/print.h"
 
 using namespace std;
 
 Inventory::Inventory(int brick, int energy, int glass, int heat, int wifi) 
   : resources{brick, energy, glass, heat, wifi} {
-  assert((resources >= 0).min());
+  Assert((resources >= 0).min(), Format("negative inventory resources %v %v %v %v %v", brick, energy, glass, heat, wifi));
 }
 
 int Inventory::GetTotal() const {

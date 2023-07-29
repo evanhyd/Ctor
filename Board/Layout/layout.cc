@@ -21,14 +21,14 @@ const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) 
   */
   static vector<vector<int>> mapping;
   
-  if (residenceIndex >= static_cast<int>(mapping.size())) {
+  if (residenceIndex >= int(mapping.size())) {
     mapping.resize(residenceIndex + 1);
   }
 
   if (mapping[residenceIndex].empty()) {
     
     //not in cache, compute the tiles
-    for (int i = 0; i < tiles.size(); ++i) {
+    for (int i = 0; i < int(tiles.size()); ++i) {
       const auto& res = GetAdjacentResidencesByTile(i);
       if (any_of(res.begin(), res.end(), [&](int index) { return index == residenceIndex; })) {
         mapping[residenceIndex].push_back(i);
@@ -175,7 +175,7 @@ void Layout::GenerateRobber() {
 
 void Layout::SetUpConnection() {
   //make residences subscribe to tiles
-  for (int index = 0; index < tiles.size(); ++index) {
+  for (int index = 0; index < int(tiles.size()); ++index) {
     for (int residenceIndex : GetAdjacentResidencesByTile(index)) {
       tiles[index]->Attach(residences[residenceIndex].get());
     }

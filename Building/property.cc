@@ -1,7 +1,7 @@
 #include "property.h"
-#include "../Builder/builder.h"
 #include "building.h"
-#include <cassert>
+#include "../Builder/builder.h"
+#include "../Utility/print.h"
 #include <string>
 
 using namespace std;
@@ -33,7 +33,7 @@ Property::operator string() const {
 }
 
 Property::Property(std::unique_ptr<Building> building) : building(std::move(building)) {
-  assert(this->building && "null building object");
+  Assert(this->building != nullptr, "null building object");
 }
 
 Property::~Property() {}

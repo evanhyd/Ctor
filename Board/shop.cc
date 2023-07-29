@@ -1,7 +1,7 @@
 #include "shop.h"
 #include "Layout/layout.h"
 #include "../Builder/builder.h"
-#include <cassert>
+#include "../Utility/print.h"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ void Shop::PurchaseAndUpgrade(Builder& builder, Property& property) const {
 }
 
 std::optional<std::string> Shop::CanBuildRoad(Builder& builder, Layout& layout, int roadIndex) const {
-  assert(0 <= roadIndex && roadIndex < int(layout.GetRoads().size()));
+  Assert(0 <= roadIndex && roadIndex < int(layout.GetRoads().size()), Format("road index out of bound %v", roadIndex));
 
   const auto& roadGraph = layout.GetRoadGraph();
   const auto& residences = layout.GetResidences();
@@ -39,7 +39,7 @@ std::optional<std::string> Shop::CanBuildRoad(Builder& builder, Layout& layout, 
     constexpr int DX[] = {0, 0, 1, 1};
     constexpr int DY[] = {0, 1, 0, 1};
 
-    for (int i = 0; i < layout.GetRoads().size(); ++i) {
+    for (int i = 0; i < int(roads.size()); ++i) {
       if (!builder.OwnRoad(i)) {
         continue;
       }
@@ -69,7 +69,7 @@ std::optional<std::string> Shop::CanBuildRoad(Builder& builder, Layout& layout, 
 }
 
 std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement = false) const{
-  assert(0 <= residenceIndex && residenceIndex < layout.GetResidences().size());
+  Assert(0 <= residenceIndex && residenceIndex < int(layout.GetResidences().size()), Format("residence index out of bound %v", residenceIndex));
 
   if(initialPlacement){
     if(layout.GetResidences()[residenceIndex]->GetOwner()){
@@ -78,9 +78,9 @@ std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& lay
     return {}; 
   }
 
-  //initially not owned by anyone 
   const auto& roadGraph = layout.GetRoadGraph(); 
   const auto& residences = layout.GetResidences(); 
+  const auto& roads = layout.GetRoads();
   const auto& property = residences[residenceIndex];
 
   //check if not owned by anyone    
@@ -89,7 +89,7 @@ std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& lay
   }
 
   //check there's no adjacent property
-  for(int i = 0; i < layout.GetRoads().size(); ++i){
+  for(int i = 0; i < int(roads.size()); ++i){
     if((roadGraph[i][0] == residenceIndex && residences[roadGraph[i][1]]->GetOwner()) ||
        (roadGraph[i][1] == residenceIndex && residences[roadGraph[i][0]]->GetOwner())) {
       return NOT_VALID_BUILD_ERROR_MSG; 
@@ -115,7 +115,7 @@ std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& lay
 }
 
 std::optional<std::string> Shop::CanImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const {
-  assert(0 <= residenceIndex && residenceIndex < int(layout.GetResidences().size()));
+  Assert(0 <= residenceIndex && residenceIndex < int(layout.GetResidences().size()), Format("residence index out of bound %v", residenceIndex));
 
   const auto& property = layout.GetResidences()[residenceIndex]; 
 

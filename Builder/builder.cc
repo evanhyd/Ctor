@@ -1,8 +1,7 @@
 #include "builder.h"
 #include "../Dice/fair_dice.h"
 #include "../Dice/loaded_dice.h"
-#include <cassert>
-#include "../Utility/format.h"
+#include "../Utility/print.h"
 
 using namespace std;
 
@@ -31,12 +30,12 @@ bool Builder::OwnResidence(int residenceIndex) const {
 }
 
 void Builder::AddRoad(int index, Property& property) {
-  assert(!roads.count(index));
+  Assert(!roads.count(index), Format("duplicated road index %v", index));
   roads[index] = &property;
 }
 
 void Builder::AddResidence(int index, ResidenceProperty& property) {
-  assert(!residences.count(index));
+  Assert(!residences.count(index), Format("duplicated residence index %v", index));
   residences[index] = &property;
 }
 
@@ -66,7 +65,7 @@ string Builder::GetBuildings() const {
 }
 
 Builder::Builder(ColourEnum colour) : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
-  assert(dice && "dice is null");
+  Assert(dice, "dice is null");
 }
 
 Builder::~Builder() {}

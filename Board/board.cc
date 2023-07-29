@@ -3,9 +3,10 @@
 #include "shop.h"
 #include "../Builder/builder.h"
 #include "View/stream_view.h"
-#include <cassert>
+#include "../Utility/print.h"
 #include <iostream>
 #include <memory>
+#include <map>
 
 using namespace std;
 
@@ -68,7 +69,7 @@ bool Board::Turn(unique_ptr<Builder> &builder) {
 	string command;
 	Print();
 	cout << "Builder " << builder->GetColour() << "'s turn." << endl;
-	cout << builder->ToString() << endl;
+	cout << builder->GetStats() << endl;
 	while (true) {
 		cout << "> ";
 		cin >> command;
@@ -90,7 +91,7 @@ bool Board::Turn(unique_ptr<Builder> &builder) {
 		if (command == "board") { 
 			Print();
 		} else if (command == "status") {
-			cout << builder->ToString() << endl;
+			cout << builder->GetStats() << endl;
 		} else if (command == "residences") {
 			cout << builder->GetBuildings() << endl;
 		} else if (command == "build-road") {
@@ -176,7 +177,7 @@ bool Board::Won(std::unique_ptr<Builder> &builder) {
 }
 
 Inventory Board::GetInventory(string resource) {
-  static const map<string, Inventory> mp = {
+  static map<string, Inventory> mp = {
     {"Brick", Inventory{1, 0, 0, 0, 0}},
     {"Energy", Inventory{0, 1, 0, 0, 0}},
     {"Glass", Inventory{0, 0, 1, 0, 0}},

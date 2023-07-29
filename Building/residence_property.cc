@@ -2,7 +2,7 @@
 #include "Residence/residence.h"
 #include "../Builder/builder.h"
 #include "../Tile/tile.h"
-#include <cassert>
+#include "../Utility/print.h"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ int ResidenceProperty::GetVictoryPoints() const {
 
 ResidenceProperty::ResidenceProperty(std::unique_ptr<Building> building)
   : Property(std::move(building)), Observer() {
-  assert(dynamic_cast<Residence*>(this->building.get()) && "building is not a property type");
+  Assert(dynamic_cast<Residence*>(this->building.get()) != nullptr, "building is not a property type");
 }
 
 ResidenceProperty::~ResidenceProperty() {}

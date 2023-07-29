@@ -2,7 +2,7 @@
 #include "../Dice/fair_dice.h"
 #include "../Dice/loaded_dice.h"
 #include <cassert>
-#include <format>
+#include "../Utility/format.h"
 
 using namespace std;
 
@@ -54,8 +54,7 @@ string Builder::GetColour() const {
 }
 
 string Builder::GetStats() const {
-  // return std::format("{} has {} building points, {}.", GetColour(), GetVictoryPoints(), string(inventory));
-  return GetColour() + " has " + to_string(GetVictoryPoints()) + " building points" + string(inventory) + ".";
+  return Format("%v has %v building points, {}.", GetColour(), GetVictoryPoints(), string(inventory));
 }
 
 string Builder::GetBuildings() const {

@@ -2,13 +2,11 @@
 #define FORMAT_H
 
 #include <string>
-#include <cctype>
 #include <regex>
-#include <type_traits>
 
 /**
   A custom std::string format function similar to C's printf.
-  A variable's replacement is indicated by the wildcard %?v, where ? is the width.
+  A variable's replacement is indicated by the wildcard %?v, where ? is the minimum width.
 
   Usage:
   string str = Format("I have %5v marks in %v class", 69, "cs");
@@ -25,7 +23,7 @@ std::string Format(const std::string& fmt, const Args&... args) {
       return;
     }
 
-    int width = (*result)[1].length() ? stoi((*result)[1]) : 0;
+    size_t width = (*result)[1].length() ? stoi((*result)[1]) : 0;
     string token;
     if constexpr (requires { to_string(arg); }) {
       token += to_string(arg);

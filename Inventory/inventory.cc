@@ -2,7 +2,7 @@
 #include <cassert>
 #include <string>
 #include <map>
-#include <format>
+#include "../Utility/format.h"
 
 using namespace std;
 
@@ -45,5 +45,5 @@ Inventory operator*(int multiplier, Inventory inventory) {
 }
 
 Inventory::operator std::string() const {
-  return format("{} brick, {}, energy, {} glass, {} heat, and {} WiFi", resources[0], resources[1], resources[2], resources[3], resources[4]); 
+  return Format("%v brick, %v energy, %v glass, %v heat, and %v WiFi", resources[0], resources[1], resources[2], resources[3], resources[4]); 
 }

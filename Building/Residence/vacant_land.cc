@@ -19,3 +19,7 @@ Inventory VacantLand::GenerateResource(Inventory inventory) const {
   assert(!("vacant land attempts to generate resource"));
   return Inventory(0, 0, 0, 0, 0);
 }
+
+VacantLand::operator std::string() const {
+  return "VACANT";
+}

@@ -12,6 +12,8 @@ class Board {
 	std::unique_ptr<Shop> shop;
 	std::unique_ptr<View> view;
 
+	void CommandHelp() const;
+
 public:
 	void Start();
 	void Play();

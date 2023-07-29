@@ -1,6 +1,8 @@
 #include "builder.h"
 #include "../Dice/fair_dice.h"
+#include "../Dice/loaded_dice.h"
 #include <cassert>
+#include <format>
 
 using namespace std;
 
@@ -38,17 +40,33 @@ void Builder::AddResidence(int index, ResidenceProperty& property) {
   residences[index] = &property;
 }
 
-std::string Builder::GetColour() {
-  static const std::string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};
+int Builder::Roll(){
+  return dice->Roll(); 
+}
+
+void Builder::SetDice(const Dice& newDice) {
+  dice = &newDice;
+}
+
+string Builder::GetColour() const {
+  static const string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};
   return COLOUR_NAMES[colour];
 }
 
-std::string Builder::GetStats() {
-  return "to do";
+string Builder::GetStats() const {
+  // return std::format("{} has {} building points, {}.", GetColour(), GetVictoryPoints(), string(inventory));
+  return GetColour() + " has " + to_string(GetVictoryPoints()) + " building points" + string(inventory) + ".";
 }
 
-Builder::Builder(ColourEnum colour)
-  : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
+string Builder::GetBuildings() const {
+  string buildings = GetColour() + " has built:\n"; 
+  for(const auto& [index, property] : residences) {
+    buildings += to_string(index) + ' ' + string(*(property))[1] + "\n"; 
+  }
+  return buildings; 
+}
+
+Builder::Builder(ColourEnum colour) : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
   assert(dice && "dice is null");
 }
 

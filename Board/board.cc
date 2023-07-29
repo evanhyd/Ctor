@@ -20,22 +20,27 @@ void Board::Print() {
 }
 
 void Board::Start() {
+  layout->GenerateLayout(69420);
+
   int vertex;
   bool successful_placement = false;
   bool reversed = false;
   int i = 0;
   Print();
   while (i > 0 || !reversed) {
-    if (i == 4) {
+    if (i == layout->GetBuilders().size()) {
       reversed = true;
-      i = 3;
+      i--;
     }
     std::unique_ptr<Builder>& builder = layout->GetBuilder(i);
     successful_placement = false;
+	cout << "here" << endl;
+	cout << builder->GetColour() << endl;
+	cout << "here2" << endl;
     while (!successful_placement) {
       cout << "Builder " << builder->GetColour() << ", where do you want to build a basement" << endl;
       cin >> vertex;
-      successful_placement = shop->BuildResidence(*builder, *layout, vertex);
+      successful_placement = shop->BuildResidence(*builder, *layout, vertex, true);
     }
     if (reversed) i--;
     else i++;
@@ -47,7 +52,7 @@ void Board::Play() {
   bool won = false;
   int winner_index = 0;
   while (!won) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < layout->GetBuilders().size(); i++) {
       unique_ptr<Builder> &builder = layout->GetBuilder(i);
       if (Turn(builder)) {
         won = true;
@@ -61,16 +66,33 @@ void Board::Play() {
 
 bool Board::Turn(unique_ptr<Builder> &builder) {
 	string command;
-  Print();
-  cout << "Builder " << builder->GetColour() << "'s turn." << endl;
-  cout << builder->GetStats() << endl;
-  while (true) {
-    cout << "> ";
+	Print();
+	cout << "Builder " << builder->GetColour() << "'s turn." << endl;
+	cout << builder->ToString() << endl;
+	while (true) {
+		cout << "> ";
+		cin >> command;
+		if (command == "load") {
+			
+		} else if (command == "fair") {
+
+		} else if (command == "roll") {
+
+		} else {
+			cout << "Invalid command." << endl;
+			continue;
+		}
+		break;
+	}
+	while (true) {
+    	cout << "> ";
 		cin >> command;
 		if (command == "board") { 
 			Print();
 		} else if (command == "status") {
-			cout << builder->GetStats() << endl;
+			cout << builder->ToString() << endl;
+		} else if (command == "residences") {
+			cout << builder->GetBuildings() << endl;
 		} else if (command == "build-road") {
 			int roadIndex;
 			cin >> roadIndex;
@@ -124,16 +146,7 @@ bool Board::Turn(unique_ptr<Builder> &builder) {
 		} else if (command == "save") {
 			// TODO	Save
 		} else if (command == "help") {
-			cout << "Valid commands:" << endl;
-			cout << "board" << endl;
-			cout << "status" << endl;
-			cout << "build-road <edge#>" << endl;
-			cout << "build-res <housing#>" << endl;
-			cout << "improve <housing#>" << endl;
-			cout << "trade <colour> <give> <take>" << endl;
-			cout << "next" << endl;
-			cout << "save <file>" << endl;
-			cout << "help" << endl;
+      CommandHelp();
 		} else {
 			cout << "Invalid command." << endl;
 		}
@@ -175,6 +188,17 @@ Inventory Board::GetInventory(string resource) {
     return mp.find(resource)->second;
   }
   else return Inventory{0, 0, 0, 0, 0};
-
 }
 
+void Board::CommandHelp() const {
+  cout << "Valid commands:" << endl;
+  cout << "board" << endl;
+  cout << "status" << endl;
+  cout << "build-road <edge#>" << endl;
+  cout << "build-res <housing#>" << endl;
+  cout << "improve <housing#>" << endl;
+  cout << "trade <colour> <give> <take>" << endl;
+  cout << "next" << endl;
+  cout << "save <file>" << endl;
+  cout << "help" << endl;
+}

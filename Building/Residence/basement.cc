@@ -16,3 +16,8 @@ int Basement::GetVictoryPoints() const {
 Inventory Basement::GenerateResource(Inventory inventory) const {
   return inventory;
 }
+
+Basement::operator std::string() const {
+  return "Basement"; 
+}
+

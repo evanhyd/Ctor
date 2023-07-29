@@ -1,16 +1,20 @@
 #ifndef ROBBER_H
 #define ROBBER_H
 
+#include <string>
+
 class Robber {
 protected:
-	int tileIndex;
+	int index;
 
-  virtual void MoveToImpl(int tileIndex) = 0;
+  virtual void MoveToImpl(int index) = 0;
 public:
 	int GetTileIndex() const;
-	void MoveTo(int tileIndex);
+	void MoveTo(int index);
 
-	explicit Robber(int tileIndex);
+  	virtual explicit operator std::string() const = 0;
+
+	explicit Robber(int index);
 	virtual ~Robber();
 };
 #endif

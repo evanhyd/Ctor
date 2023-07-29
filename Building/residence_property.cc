@@ -4,6 +4,8 @@
 #include "../Tile/tile.h"
 #include <cassert>
 
+using namespace std;
+
 void ResidenceProperty::Notify(const Inventory& inventory) {
   //reward the owner with resources
   const Inventory gained = static_cast<Residence*>(building.get())->GenerateResource(inventory);
@@ -16,7 +18,7 @@ int ResidenceProperty::GetVictoryPoints() const {
 
 ResidenceProperty::ResidenceProperty(std::unique_ptr<Building> building)
   : Property(std::move(building)), Observer() {
-  assert(dynamic_cast<Residence*>(building.get()) && "building is not a property type");
+  assert(dynamic_cast<Residence*>(this->building.get()) && "building is not a property type");
 }
 
 ResidenceProperty::~ResidenceProperty() {}

@@ -19,6 +19,7 @@ public:
   Inventory GetUpgradeCost();
   bool CanUpgradeToNextTier() const;
   void Upgrade(Builder& builder);
+  explicit operator std::string() const;
 
   explicit Property(std::unique_ptr<Building> building);
   virtual ~Property();

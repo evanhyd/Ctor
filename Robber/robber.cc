@@ -1,14 +1,15 @@
 #include "robber.h"
 
 int Robber::GetTileIndex() const {
-  return tileIndex;
+  return index;
 }
 
 void Robber::MoveTo(int tileIndex) {
-  tileIndex = tileIndex;
-  MoveToImpl(tileIndex);
+  index = tileIndex;
+  MoveToImpl(index);
 }
 
-Robber::Robber(int tileIndex) : tileIndex(tileIndex) {}
+Robber::Robber(int index) : index(index) {}
 
 Robber::~Robber() {}
+

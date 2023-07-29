@@ -9,7 +9,8 @@
 #include "../../Building/Residence/vacant_land.h"
 #include "../../Builder/human_builder.h"
 #include "../../Robber/geese.h"
-#include "../../Utility/random.h"
+#include <random>
+#include <chrono>
 
 using namespace std;
 
@@ -27,7 +28,7 @@ const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) 
   if (mapping[residenceIndex].empty()) {
     
     //not in cache, compute the tiles
-    for (int i = 0; i < TILE_COUNT; ++i) {
+    for (int i = 0; i < tiles.size(); ++i) {
       const auto& res = GetAdjacentResidencesByTile(i);
       if (any_of(res.begin(), res.end(), [&](int index) { return index == residenceIndex; })) {
         mapping[residenceIndex].push_back(i);
@@ -38,7 +39,7 @@ const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) 
   return mapping[residenceIndex];
 }
 
-const std::vector<int>& Layout::GetAdjacentResidencesByTile(int tileIndex) const {
+const std::vector<int>& Layout::GetAdjacentResidencesByTile(int index) const {
   /*
     Returns the indices of residence that surrounds the tile given by the tile index.
     Each tile should have at least one nearby residence, and vice versa.
@@ -58,7 +59,7 @@ const std::vector<int>& Layout::GetAdjacentResidencesByTile(int tileIndex) const
     |32|--44--|33|
   */
   static const vector<vector<int>> mapping = {
-    {0, 1, 3, 4, 8, 0},
+    {0, 1, 3, 4, 8, 9},
     {2, 3, 7, 8, 13, 14},
     {4, 5, 9, 10, 15, 16},
     {6, 7, 12, 13, 18, 19},
@@ -79,7 +80,7 @@ const std::vector<int>& Layout::GetAdjacentResidencesByTile(int tileIndex) const
     {44, 45, 49, 50, 52, 53},
   };
 
-  return mapping[tileIndex];
+  return mapping[index];
 }
 
 const vector<vector<int>>& Layout::GetRoadGraph() {
@@ -116,12 +117,6 @@ const vector<vector<int>>& Layout::GetRoadGraph() {
 }
 
 void Layout::GenerateTiles(unsigned seed) {
-
-  //this function has a bug
-  //it should generate the graph based on the seeding
-  //therefore it shouldn't rely on the utility Random class that seeds based on the current time.
-
-
   /*
    3 WIFI, 3 HEAT, 4 BRICK, 4 ENERGY, 4 GLASS, 1 PARK
    Park tile has tile number 7
@@ -131,13 +126,16 @@ void Layout::GenerateTiles(unsigned seed) {
   */
 
   //generate the tile numbers
+  constexpr int TILE_COUNT = 19;
   vector<int> tileNums(TILE_COUNT);
   tileNums[0] = 7;
   tileNums[1] = 2;
   tileNums[2] = 12;
   const vector<int> candidates = {3, 4, 5, 6, 8, 9, 10, 11};
-  Random::Sample(candidates.begin(), candidates.end(), tileNums.begin() + 3, TILE_COUNT - 3);
-  Random::Shuffle(tileNums.begin() + 1, tileNums.end());
+
+  default_random_engine engine(seed);
+  sample(candidates.begin(), candidates.end(), tileNums.begin() + 3, TILE_COUNT - 3, engine);
+  shuffle(tileNums.begin() + 1, tileNums.end(), engine);
   
   //assign tile numbers to tiles, then shuffle the physical structure order
   tiles.push_back(make_unique<ParkTile>(tileNums[0]));
@@ -146,22 +144,25 @@ void Layout::GenerateTiles(unsigned seed) {
   tiles.push_back(make_unique<BrickTile>(tileNums[7])); tiles.push_back(make_unique<BrickTile>(tileNums[8])); tiles.push_back(make_unique<BrickTile>(tileNums[9])); make_unique<BrickTile>(tileNums[10]),
   tiles.push_back(make_unique<EnergyTile>(tileNums[11])); tiles.push_back(make_unique<EnergyTile>(tileNums[12])); tiles.push_back(make_unique<EnergyTile>(tileNums[13])); make_unique<EnergyTile>(tileNums[14]),
   tiles.push_back(make_unique<GlassTile>(tileNums[15])); tiles.push_back(make_unique<GlassTile>(tileNums[16])); tiles.push_back(make_unique<GlassTile>(tileNums[17])); make_unique<GlassTile>(tileNums[18]),
-  Random::Shuffle(tiles.begin(), tiles.end());
+  shuffle(tiles.begin(), tiles.end(), engine);
 }
 
 void Layout::GenerateRoads() {
+  constexpr int ROAD_COUNT = 72;
   for (int i = 0; i < ROAD_COUNT; ++i) {
     roads.push_back(make_unique<Property>(make_unique<VacantRoad>()));
   }
 }
 
 void Layout::GenerateResidences() {
+  constexpr int RESIDENCE_COUNT = 54;
   for (int i = 0; i < RESIDENCE_COUNT; ++i) {
     residences.push_back(make_unique<ResidenceProperty>(make_unique<VacantLand>()));
   }
 }
 
 void Layout::GenerateBuilders() {
+  constexpr int BUILDER_COUNT = 4;
   for (int i = 0; i < BUILDER_COUNT; ++i) {
     builders.push_back(make_unique<HumanBuilder>(ColourEnum(i)));
   }
@@ -174,13 +175,16 @@ void Layout::GenerateRobber() {
 
 void Layout::SetUpConnection() {
   //make residences subscribe to tiles
-  for (int tileIndex = 0; tileIndex < TILE_COUNT; ++tileIndex) {
-    for (int residenceIndex : GetAdjacentResidencesByTile(tileIndex)) {
-      tiles[tileIndex]->Attach(residences[residenceIndex].get());
+  for (int index = 0; index < tiles.size(); ++index) {
+    for (int residenceIndex : GetAdjacentResidencesByTile(index)) {
+      tiles[index]->Attach(residences[residenceIndex].get());
     }
   }
 }
 
+/**
+  Generate random layout provided by the seed.
+*/
 void Layout::GenerateLayout(unsigned seed) {
   GenerateTiles(seed);
   GenerateRoads();
@@ -190,6 +194,9 @@ void Layout::GenerateLayout(unsigned seed) {
   SetUpConnection();
 }
 
+/**
+  Import existed layout from file.
+*/
 bool Layout::ImportLayout(const string& fileName) {
   return false;
 }
@@ -198,16 +205,32 @@ const std::vector<std::unique_ptr<Tile>>& Layout::GetTiles() const{
   return tiles; 
 }
 
+const std::unique_ptr<Tile>& Layout::GetTile(int index) const {
+  return tiles[index];
+}
+
 const std::vector<std::unique_ptr<Property>>& Layout::GetRoads() const {
   return roads; 
+}
+
+const std::unique_ptr<Property>& Layout::GetRoad(int index) const {
+  return roads[index];
 }
 
 const std::vector<std::unique_ptr<ResidenceProperty>>& Layout::GetResidences() const {
   return residences;
 }
 
+const std::unique_ptr<ResidenceProperty>& Layout::GetResidence(int index) const {
+  return residences[index];
+}
+
 const std::vector<std::unique_ptr<Builder>>& Layout::GetBuilders() const {
   return builders;
+}
+
+std::unique_ptr<Builder>& Layout::GetBuilder(int index) {
+  return builders[index];
 }
 
 Layout::Layout() {}

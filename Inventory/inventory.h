@@ -11,15 +11,16 @@ public:
 	int GetTotal() const;
   bool CanAfford(const Inventory& cost) const;
 
-  explicit operator std::string() const;
+  
   Inventory& operator+=(const Inventory& other);
   Inventory& operator-=(const Inventory& other);
-  Inventory& operator*=(int mulitplier);
-  
+  Inventory& operator*=(int multiplier);
+  explicit operator std::string() const;
+
   explicit Inventory(int brick, int energy, int glass, int heat, int wifi);
 };
 
-Inventory operator*(Inventory inventory, int mulitplier);
+Inventory operator*(Inventory inventory, int multiplier);
 Inventory operator*(int multiplier, Inventory inventory);
 
 #endif

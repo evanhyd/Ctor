@@ -2,6 +2,7 @@
 #include <cassert>
 #include <string>
 #include <map>
+#include <format>
 
 using namespace std;
 
@@ -28,8 +29,8 @@ Inventory& Inventory::operator-=(const Inventory& other) {
   return *this;
 }
 
-Inventory& Inventory::operator*=(int mulitplier) {
-  resources *= mulitplier;
+Inventory& Inventory::operator*=(int multiplier) {
+  resources *= multiplier;
   return *this;
 }
 
@@ -44,6 +45,5 @@ Inventory operator*(int multiplier, Inventory inventory) {
 }
 
 Inventory::operator std::string() const {
-  using namespace std;
-  return to_string(resources[0]) + " " + to_string(resources[1]) + " " + to_string(resources[2]) + " " + to_string(resources[3]) + " " + to_string(resources[4]);
+  return format("{} brick, {}, energy, {} glass, {} heat, and {} WiFi", resources[0], resources[1], resources[2], resources[3], resources[4]); 
 }

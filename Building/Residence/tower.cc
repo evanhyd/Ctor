@@ -17,3 +17,7 @@ int Tower::GetVictoryPoints() const {
 Inventory Tower::GenerateResource(Inventory inventory) const {
   return inventory * 3;
 }
+
+Tower::operator std::string() const {
+  return "TOWER";
+}

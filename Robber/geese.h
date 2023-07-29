@@ -5,6 +5,8 @@
 class Geese : public Robber {
   using Robber::Robber;
 
-  virtual void MoveToImpl(int tileIndex) override;
+  virtual void MoveToImpl(int index) override;
+  virtual explicit operator std::string() const override;
+
 };
 #endif

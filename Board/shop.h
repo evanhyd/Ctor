@@ -15,13 +15,13 @@ class Shop {
   
 	//define the rules of purchasing property
 	virtual std::optional<std::string> CanBuildRoad(Builder& builder, Layout& layout, int roadIndex) const;
-	virtual std::optional<std::string> CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex) const;
+	virtual std::optional<std::string> CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement) const;
 	virtual std::optional<std::string> CanImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const;
 	virtual bool CanTrade(Builder& instigator, Builder& subject, const Inventory& trade) const;
 
 public:
 	bool BuildRoad(Builder& builder, Layout& layout, int roadIndex) const;
-	bool BuildResidence(Builder& builder, Layout& layout, int residenceIndex) const;
+	bool BuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement = false) const;
 	bool ImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const;
 	bool Trade(Builder& instigator, Builder& subject, const Inventory& trade) const;
 

@@ -44,7 +44,7 @@ std::optional<std::string> Shop::CanBuildRoad(Builder& builder, Layout& layout, 
         continue;
       }
 
-      //check if there's a property sandwitched in between
+      //check if there's a property sand-witched in between
       for (int j = 0; j < 4; ++j) {
         const int r0 = roadGraph[i][DX[j]];
         const int r1 = roadGraph[i][DY[j]];
@@ -68,8 +68,15 @@ std::optional<std::string> Shop::CanBuildRoad(Builder& builder, Layout& layout, 
   return {};
 }
 
-std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex) const{
+std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement = false) const{
   assert(0 <= residenceIndex && residenceIndex < layout.GetResidences().size());
+
+  if(initialPlacement){
+    if(layout.GetResidences()[residenceIndex]->GetOwner()){
+      return NOT_VALID_BUILD_ERROR_MSG; 
+    }
+    return {}; 
+  }
 
   //initially not owned by anyone 
   const auto& roadGraph = layout.GetRoadGraph(); 
@@ -91,7 +98,7 @@ std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& lay
 
   //check there's an adjacent road
   int index = 0;
-  const bool hasAdjacent = std::any_of(roadGraph.begin(), roadGraph.end(), [&](const auto& roadEdge) mutable {
+  const bool hasAdjacent = initialPlacement || std::any_of(roadGraph.begin(), roadGraph.end(), [&](const auto& roadEdge) mutable {
     return (roadEdge[0] == residenceIndex || roadEdge[1] == residenceIndex) && builder.OwnRoad(index++);
   });
 
@@ -110,7 +117,6 @@ std::optional<std::string> Shop::CanBuildResidence(Builder& builder, Layout& lay
 std::optional<std::string> Shop::CanImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const {
   assert(0 <= residenceIndex && residenceIndex < int(layout.GetResidences().size()));
 
-  //initially not owned by anyone 
   const auto& property = layout.GetResidences()[residenceIndex]; 
 
   //must be owned and have next tier
@@ -142,8 +148,8 @@ bool Shop::BuildRoad(Builder& builder, Layout& layout, int roadIndex) const {
   return true;
 }
 
-bool Shop::BuildResidence(Builder& builder, Layout& layout, int residenceIndex) const {
-  if (auto error = CanBuildResidence(builder, layout, residenceIndex); error) {
+bool Shop::BuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement) const {
+  if (auto error = CanBuildResidence(builder, layout, residenceIndex, initialPlacement); error) {
     BroadcastMessage(error.value());
     return false;
   }

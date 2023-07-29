@@ -17,10 +17,6 @@ protected:
 	std::vector<std::unique_ptr<ResidenceProperty>> residences;
 	std::vector<std::unique_ptr<Builder>> builders;
 	std::unique_ptr<Robber> robber;
-
-  //define the physical structure of a layout
-  const std::vector<int>& GetAdjacentTilesByResidence(int residenceIndex) const;
-  virtual const std::vector<int>& GetAdjacentResidencesByTile(int tileIndex) const;
   
   //define the content of a layout
   virtual void GenerateTiles(unsigned seed);
@@ -36,18 +32,19 @@ public:
 
   const std::vector<std::unique_ptr<Tile>>& GetTiles() const;
   const std::vector<std::unique_ptr<Property>>& GetRoads() const;
+  const std::unique_ptr<Property>& GetRoad(int index) const;
   const std::vector<std::unique_ptr<ResidenceProperty>>& GetResidences() const;
+  const std::unique_ptr<ResidenceProperty>& GetResidence(int index) const;
   const std::vector<std::unique_ptr<Builder>>& GetBuilders() const;
-  std::unique_ptr<Builder>& GetBuilder(int index) const;
+  const std::unique_ptr<Tile>& GetTile(int index) const;
+  std::unique_ptr<Builder>& GetBuilder(int index);
   virtual const std::vector<std::vector<int>>& GetRoadGraph();
+
+  //define the physical structure of a layout
+  const std::vector<int>& GetAdjacentTilesByResidence(int residenceIndex) const;
+  virtual const std::vector<int>& GetAdjacentResidencesByTile(int index) const;
 
 	explicit Layout();
   virtual ~Layout();
-
-private:
-  static constexpr int TILE_COUNT = 19;
-  static constexpr int ROAD_COUNT = 72;
-  static constexpr int RESIDENCE_COUNT = 54;
-  static constexpr int BUILDER_COUNT = 4;
 };
 #endif

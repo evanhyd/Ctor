@@ -16,3 +16,7 @@ int House::GetVictoryPoints() const {
 Inventory House::GenerateResource(Inventory inventory) const {
   return inventory * 2;
 }
+
+House::operator std::string() const {
+  return "HOUSE";
+}

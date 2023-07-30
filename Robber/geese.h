@@ -1,12 +1,12 @@
 #ifndef GEESE_H
 #define GEESE_H
 #include "robber.h"
+#include <string>
 
 class Geese : public Robber {
   using Robber::Robber;
 
-  virtual void MoveToImpl(int index) override;
-  virtual explicit operator std::string() const override;
-
+  virtual Inventory ApplyModifier(const Inventory& inventory) const = 0;
+  virtual explicit operator std::string() const = 0;
 };
 #endif

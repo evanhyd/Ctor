@@ -29,8 +29,8 @@ public:
   virtual ~Shop();
 
 private:
-  static const std::string NOT_VALID_BUILD_ERROR_MSG;
-  static const std::string NOT_SUFFICIENT_RESOURCES_ERROR_MSG;
+  static const std::string NOT_VALID_BUILD_ERROR;
+  static const std::string NOT_SUFFICIENT_RESOURCES_ERROR;
 };
 
 #endif

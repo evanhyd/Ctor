@@ -4,8 +4,7 @@
 #include "colour_enum.h"
 
 class AIBuilder : public Builder {
-    AIBuilder(ColourEnum colour, int victoryPoints);
-    ~AIBuilder() override;  
+  using Builder::Builder;
 }; 
 
 #endif 

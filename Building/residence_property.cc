@@ -7,7 +7,7 @@
 using namespace std;
 
 void ResidenceProperty::Notify(const Inventory& inventory) {
-  //reward the owner with resources
+  //apply resources modifiers based on the builing type
   const Inventory gained = static_cast<Residence*>(building.get())->GenerateResource(inventory);
   owner->GetInventory() += inventory;
 }

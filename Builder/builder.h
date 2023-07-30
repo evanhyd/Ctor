@@ -3,22 +3,26 @@
 #include <vector> 
 #include <string>
 #include <map>
-#include <optional> 
-#include "colour_enum.h"
+#include <optional>
 #include "../Inventory/inventory.h"
 #include "../Building/property.h"
 #include "../Building/residence_property.h"
+#include "colour_enum.h"
 
 class Dice; 
 
 class Builder {
-  ColourEnum colour;
+public:
+  
+
+protected:
+  ColourEnum::Type colour;
   Inventory inventory;
   std::map<int, Property*> roads;
   std::map<int, ResidenceProperty*> residences;
   const Dice* dice;
 
-public: 
+public:
   Inventory& GetInventory();
   const Inventory& GetInventory() const;
   int GetVictoryPoints() const;
@@ -33,11 +37,11 @@ public:
   int Roll();
   void SetDice(const Dice& newDice);
   
-  std::string GetColour() const;
+  ColourEnum::Type GetColour() const;
   std::string GetStats() const;
   std::string GetResidences() const;
   
-  explicit Builder(ColourEnum colour); 
+  explicit Builder(ColourEnum::Type colour); 
   virtual ~Builder();
 };
 

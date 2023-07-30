@@ -1,11 +1,9 @@
 #include "geese.h"
 
-#include <string>
-
 using namespace std;
-	
-void Geese::MoveToImpl(int index) {
 
+Inventory Geese::ApplyModifier(const Inventory& inventory) const {
+  return Inventory(0, 0, 0, 0, 0);
 }
 
 Geese::operator string() const {

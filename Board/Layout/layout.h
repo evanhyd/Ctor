@@ -27,22 +27,19 @@ protected:
   virtual void SetUpConnection();
   
 public:
+  //define the physical structure of a layout
+  virtual const std::vector<std::vector<int>>& GetRoadGraph();
+  virtual const std::vector<int>& GetAdjacentResidencesByTile(int index) const;
+  const std::vector<int>& GetAdjacentTilesByResidence(int residenceIndex) const;
+
   void GenerateLayout(unsigned seed);
   bool ImportLayout(const std::string& fileName);
 
   const std::vector<std::unique_ptr<Tile>>& GetTiles() const;
   const std::vector<std::unique_ptr<Property>>& GetRoads() const;
-  const std::unique_ptr<Property>& GetRoad(int index) const;
   const std::vector<std::unique_ptr<ResidenceProperty>>& GetResidences() const;
-  const std::unique_ptr<ResidenceProperty>& GetResidence(int index) const;
   const std::vector<std::unique_ptr<Builder>>& GetBuilders() const;
-  const std::unique_ptr<Tile>& GetTile(int index) const;
-  std::unique_ptr<Builder>& GetBuilder(int index);
-  virtual const std::vector<std::vector<int>>& GetRoadGraph();
-
-  //define the physical structure of a layout
-  const std::vector<int>& GetAdjacentTilesByResidence(int residenceIndex) const;
-  virtual const std::vector<int>& GetAdjacentResidencesByTile(int index) const;
+  Robber& GetRobber() const;
 
 	explicit Layout();
   virtual ~Layout();

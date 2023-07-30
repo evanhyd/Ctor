@@ -2,17 +2,18 @@
 #define ROBBER_H
 
 #include <string>
+#include "../Inventory/inventory.h"
 
 class Robber {
 protected:
 	int index;
 
-  virtual void MoveToImpl(int index) = 0;
 public:
 	int GetTileIndex() const;
-	void MoveTo(int index);
+	void MoveToTile(int tileIndex);
 
-  	virtual explicit operator std::string() const = 0;
+  virtual Inventory ApplyModifier(const Inventory& inventory) const = 0;
+  virtual explicit operator std::string() const = 0;
 
 	explicit Robber(int index);
 	virtual ~Robber();

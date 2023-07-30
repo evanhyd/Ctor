@@ -5,10 +5,12 @@
 #include <map>
 #include <string>
 #include <functional>
-#include "shop.h"
-#include "View/view.h"
 #include "Layout/layout.h"
+#include "shop.h"
 #include "../Observer/subject.h"
+#include "../Inventory/inventory.h"
+
+class Builder;
 
 class Board : Subject<std::string> {
   enum class Code : int {
@@ -18,7 +20,6 @@ class Board : Subject<std::string> {
 
 	std::unique_ptr<Layout> layout;
 	std::unique_ptr<Shop> shop;
-	std::unique_ptr<View> view;
 
   int playerIndex;
   //command set should be initialize dynamically
@@ -28,6 +29,7 @@ class Board : Subject<std::string> {
   std::map<std::string, std::function<Code()>> duringTurnCMD;
 
   virtual void InitializeCommandMapping();
+  Builder& CurrentBuilder();
 
   //4 stages of the game
   void BeginGame();
@@ -52,13 +54,13 @@ class Board : Subject<std::string> {
   Code CommandSave();
   Code CommandHelp();
 
-
+  void DistributeResource(int tileNumber);
 	Inventory ParseResourceToInventory(std::string resource);
   bool HasWon();
 
 public:
+  void ImportBoard();
 	void Play();
-	void Reset();
   
 	Board();
 };

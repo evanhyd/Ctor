@@ -31,12 +31,12 @@ bool Builder::OwnResidence(int residenceIndex) const {
 
 void Builder::AddRoad(int index, Property& property) {
   Assert(!roads.count(index), Format("duplicated road index %v", index));
-  roads[index] = &property;
+  roads.insert({index, &property});
 }
 
 void Builder::AddResidence(int index, ResidenceProperty& property) {
   Assert(!residences.count(index), Format("duplicated residence index %v", index));
-  residences[index] = &property;
+  residences.insert({index, &property});
 }
 
 int Builder::OwnedRoadCount() const {
@@ -55,9 +55,8 @@ void Builder::SetDice(const Dice& newDice) {
   dice = &newDice;
 }
 
-string Builder::GetColour() const {
-  static const string COLOUR_NAMES[ColourEnum::COUNT] = {"Blue", "Red", "Orange", "Yellow"};
-  return COLOUR_NAMES[colour];
+ColourEnum::Type Builder::GetColour() const {
+  return colour;
 }
 
 string Builder::GetStats() const {
@@ -72,7 +71,7 @@ string Builder::GetResidences() const {
   return buildings; 
 }
 
-Builder::Builder(ColourEnum colour) : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
+Builder::Builder(ColourEnum::Type colour) : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
   Assert(dice, "dice is null");
 }
 

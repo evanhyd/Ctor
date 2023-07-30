@@ -14,6 +14,39 @@
 
 using namespace std;
 
+const vector<vector<int>>& Layout::GetRoadGraph() {
+  /*
+    Return the incident edge graph representation of the roads.
+    It stores the residenceIndex that the edge is incident to.
+
+    Ex:
+    road 27 is a path from residence 20 to residence 21
+    mapping[27] = {20, 21}
+
+    |20|--27--|21|
+      |         |
+     31    9   32
+      |  BRICK  |
+    |26|   2  |27|
+      |         |
+     39        40
+      |         |
+    |32|--44--|33|
+  */
+  static const vector<vector<int>> mapping = {
+    {0, 1},   {0, 3},   {1, 4},   {2, 3},   {4, 5},   {2, 7},   {3, 8},   {4, 9},   {5, 10},
+    {6, 7},   {8, 9},   {10, 11}, {6, 12},  {7, 13},  {8, 14},  {9, 15},  {10, 16}, {11, 17},
+    {13, 14}, {15, 16}, {12, 18}, {13, 19}, {14, 20}, {15, 21}, {16, 22}, {17, 23}, {18, 19},
+    {20, 21}, {22, 23}, {18, 24}, {19, 25}, {20, 26}, {21, 27}, {22, 28}, {23, 29}, {25, 26},
+    {27, 28}, {24, 30}, {25, 31}, {26, 32}, {27, 33}, {28, 34}, {29, 35}, {30, 31}, {32, 33},
+    {34, 35}, {30, 36}, {31, 37}, {32, 38}, {33, 39}, {34, 40}, {35, 41}, {37, 38}, {39, 40},
+    {36, 42}, {37, 43}, {38, 44}, {39, 45}, {40, 46}, {41, 47}, {42, 43}, {44, 45}, {46, 47},
+    {43, 48}, {44, 49}, {45, 50}, {46, 51}, {48, 49}, {50, 51}, {49, 52}, {50, 53}, {52, 53}
+  }; 
+
+  return mapping;
+}
+
 const std::vector<int>& Layout::GetAdjacentTilesByResidence(int residenceIndex) const {
   /**
     Returns the indices of tiles that's around the residence given by the residence index.
@@ -81,39 +114,6 @@ const std::vector<int>& Layout::GetAdjacentResidencesByTile(int index) const {
   };
 
   return mapping[index];
-}
-
-const vector<vector<int>>& Layout::GetRoadGraph() {
-  /*
-    Return the incident edge graph representation of the roads.
-    It stores the residenceIndex that the edge is incident to.
-
-    Ex:
-    road 27 is a path from residence 20 to residence 21
-    mapping[27] = {20, 21}
-
-    |20|--27--|21|
-      |         |
-     31    9   32
-      |  BRICK  |
-    |26|   2  |27|
-      |         |
-     39        40
-      |         |
-    |32|--44--|33|
-  */
-  static const vector<vector<int>> mapping = {
-    {0, 1},   {0, 3},   {1, 4},   {2, 3},   {4, 5},   {2, 7},   {3, 8},   {4, 9},   {5, 10},
-    {6, 7},   {8, 9},   {10, 11}, {6, 12},  {7, 13},  {8, 14},  {9, 15},  {10, 16}, {11, 17},
-    {13, 14}, {15, 16}, {12, 18}, {13, 19}, {14, 20}, {15, 21}, {16, 22}, {17, 23}, {18, 19},
-    {20, 21}, {22, 23}, {18, 24}, {19, 25}, {20, 26}, {21, 27}, {22, 28}, {23, 29}, {25, 26},
-    {27, 28}, {24, 30}, {25, 31}, {26, 32}, {27, 33}, {28, 34}, {29, 35}, {30, 31}, {32, 33},
-    {34, 35}, {30, 36}, {31, 37}, {32, 38}, {33, 39}, {34, 40}, {35, 41}, {37, 38}, {39, 40},
-    {36, 42}, {37, 43}, {38, 44}, {39, 45}, {40, 46}, {41, 47}, {42, 43}, {44, 45}, {46, 47},
-    {43, 48}, {44, 49}, {45, 50}, {46, 51}, {48, 49}, {50, 51}, {49, 52}, {50, 53}, {52, 53}
-  }; 
-
-  return mapping;
 }
 
 void Layout::GenerateTiles(unsigned seed) {
@@ -205,32 +205,20 @@ const std::vector<std::unique_ptr<Tile>>& Layout::GetTiles() const{
   return tiles; 
 }
 
-const std::unique_ptr<Tile>& Layout::GetTile(int index) const {
-  return tiles[index];
-}
-
 const std::vector<std::unique_ptr<Property>>& Layout::GetRoads() const {
   return roads; 
-}
-
-const std::unique_ptr<Property>& Layout::GetRoad(int index) const {
-  return roads[index];
 }
 
 const std::vector<std::unique_ptr<ResidenceProperty>>& Layout::GetResidences() const {
   return residences;
 }
 
-const std::unique_ptr<ResidenceProperty>& Layout::GetResidence(int index) const {
-  return residences[index];
-}
-
 const std::vector<std::unique_ptr<Builder>>& Layout::GetBuilders() const {
   return builders;
 }
 
-std::unique_ptr<Builder>& Layout::GetBuilder(int index) {
-  return builders[index];
+Robber& Layout::GetRobber() const {
+  return *robber;
 }
 
 Layout::Layout() {}

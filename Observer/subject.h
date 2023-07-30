@@ -4,7 +4,6 @@
 #include "../Utility/print.h"
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
 template <typename T>
 class Subject {

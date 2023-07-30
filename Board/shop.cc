@@ -5,8 +5,8 @@
 
 using namespace std;
 
-const std::string Shop::NOT_VALID_BUILD_ERROR_MSG = "You cannot build here.";
-const std::string Shop::NOT_SUFFICIENT_RESOURCES_ERROR_MSG = "You do not have enough resources.";
+const std::string Shop::NOT_VALID_BUILD_ERROR = "You cannot build here.";
+const std::string Shop::NOT_SUFFICIENT_RESOURCES_ERROR = "You do not have enough resources.";
 
 void Shop::PurchaseAndUpgrade(Builder& builder, Property& property, bool initialPlacement) const {
   if (!initialPlacement) {
@@ -22,12 +22,12 @@ Shop::Error Shop::CanBuildRoad(Builder& builder, Layout& layout, int roadIndex) 
 
   //check index bound
   if (roadIndex < 0 || roadIndex >= int(roads.size())) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
 
   //check the road has no owner
   if (roads[roadIndex]->GetOwner()) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
   
   //check if any owned adjacent residences
@@ -59,11 +59,11 @@ Shop::Error Shop::CanBuildRoad(Builder& builder, Layout& layout, int roadIndex) 
   };
 
   if(!CheckRoad() && !CheckResidence()) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
 
   if(!builder.GetInventory().CanAfford(roads[roadIndex]->GetUpgradeCost())) {
-    return NOT_SUFFICIENT_RESOURCES_ERROR_MSG;
+    return NOT_SUFFICIENT_RESOURCES_ERROR;
   }
 
   return {};
@@ -77,19 +77,19 @@ Shop::Error Shop::CanBuildResidence(Builder& builder, Layout& layout, int reside
 
   //check index bound
   if (residenceIndex < 0 || residenceIndex >= int(residences.size())) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
 
   //check if not owned by anyone    
   if (property->GetOwner()) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
 
   //check there's no adjacent property
   for (int i = 0; i < int(roads.size()); ++i){
     if((roadGraph[i][0] == residenceIndex && residences[roadGraph[i][1]]->GetOwner()) ||
        (roadGraph[i][1] == residenceIndex && residences[roadGraph[i][0]]->GetOwner())) {
-      return NOT_VALID_BUILD_ERROR_MSG; 
+      return NOT_VALID_BUILD_ERROR; 
     }
   }
 
@@ -100,12 +100,12 @@ Shop::Error Shop::CanBuildResidence(Builder& builder, Layout& layout, int reside
   });
 
   if (!hasAdjacent) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
 
   //make sure the housing is affordable
   if(!initialPlacement && !builder.GetInventory().CanAfford(property->GetUpgradeCost())) {
-    return NOT_SUFFICIENT_RESOURCES_ERROR_MSG;
+    return NOT_SUFFICIENT_RESOURCES_ERROR;
   }
 
   return {};
@@ -116,27 +116,30 @@ Shop::Error Shop::CanImproveResidence(Builder& builder, Layout& layout, int resi
 
   //check index bound
   if (residenceIndex < 0 || residenceIndex >= int(residences.size())) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
 
   //must be owned and have next tier
   const auto& property = residences[residenceIndex]; 
   if (property->GetOwner() != &builder || property->CanUpgradeToNextTier()) {
-    return NOT_VALID_BUILD_ERROR_MSG;
+    return NOT_VALID_BUILD_ERROR;
   }
 
   if(!builder.GetInventory().CanAfford(property->GetUpgradeCost())) {
-    return NOT_SUFFICIENT_RESOURCES_ERROR_MSG;
+    return NOT_SUFFICIENT_RESOURCES_ERROR;
   }
 
   return {};
 }
 
 Shop::Error Shop::CanTrade(Builder& instigator, Builder& subject, const Inventory& trade) const {
-  if (instigator.GetInventory().CanAfford(trade) && subject.GetInventory().CanAfford(trade * -1)) {
-    return {};
+  if (!instigator.GetInventory().CanAfford(trade)) {
+    return NOT_SUFFICIENT_RESOURCES_ERROR;
   }
-  return NOT_SUFFICIENT_RESOURCES_ERROR_MSG;
+  if (!subject.GetInventory().CanAfford(trade * -1)) {
+    return Format("Builder %v does not have enough resources", ColourEnum::Name(subject.GetColour()));
+  }
+  return {};
 }
 
 Shop::Error Shop::BuildRoad(Builder& builder, Layout& layout, int roadIndex) const {

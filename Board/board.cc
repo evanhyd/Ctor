@@ -349,7 +349,25 @@ void Board::DistributeResource(int tileNumber) {
 }
 
 void Board::ActivateRobber() {
+  //todo 
+  layout->GetRobber().ApplyBuilderModifier(layout->GetBuilders(), CurrentBuilder());
+  //how do we notify 
 
+
+  //prompting builder for new 
+  NotifyAll(Format("Choose where to place the %v\n", string(layout->GetRobber()))); 
+  int newRobberPosition;
+  cin >> newRobberPosition; 
+
+  if(newRobberPosition == layout->GetRobber().GetTileIndex()){
+    return; 
+  }
+
+  
+
+
+  //code for placing moving the robber 
+  //some robber moveto functionality 
 }
 
 Inventory Board::ParseResourceToInventory(string resource) {

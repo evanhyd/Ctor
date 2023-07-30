@@ -8,7 +8,7 @@
 #include "../../Building/residence_property.h"
 #include "../../Building/building.h"
 #include "../../Tile/tile.h"
-#include "../../Robber/robber.h"
+#include "../Robber/geese.h"
 
 class Layout : public Subject<std::string> {
 protected:

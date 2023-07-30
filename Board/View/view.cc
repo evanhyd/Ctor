@@ -1,6 +1,7 @@
 #include "view.h"
+#include "../Layout/layout.h"
     
-void View::Render(Layout& layout) {
+void View::Render(const Layout& layout) {
   RenderImpl(layout); 
 }
 

@@ -15,7 +15,7 @@ public:
 	void MoveToTile(int tileIndex);
 
   virtual void ApplyResourceModifier(Inventory& inventory) const = 0;
-  virtual void ApplyBuilderModifier(Builder& builder) const = 0;
+  virtual void ApplyBuilderModifier(const std::vector<std::unique_ptr<Builder>>& allBuilders, Builder& currentBuilder) const = 0;
   virtual explicit operator std::string() const = 0;
 
 	explicit Robber(int index);

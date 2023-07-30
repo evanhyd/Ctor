@@ -8,9 +8,11 @@ class Builder;
 
 class Geese : public Robber {
   using Robber::Robber;
+  Inventory GetRandomHalfInventory(Inventory& inventory) const; 
 
+public: 
   virtual void ApplyResourceModifier(Inventory& inventory) const override;
-  virtual void ApplyBuilderModifier(Builder& builder) const override;
+  virtual void ApplyBuilderModifier(const std::vector<std::unique_ptr<Builder>>& allBuilders, Builder& builder) const override;
   virtual explicit operator std::string() const override;
 };
 #endif

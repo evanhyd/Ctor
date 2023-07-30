@@ -11,9 +11,11 @@ class StreamView : public View {
 
   virtual void RenderImpl(Layout& layout) override;
   virtual void Notify(const std::string& data) override;
-  std::string VF(int vertex); // Vertex Format
-  std::string EF(int edge); // Edge Format
-  std::string GA(int tile); // Goose At
+  std::string FV(int vertex, Layout& layout); // Format Vertex
+  std::string FE(int edge, Layout& layout); // Format Edge
+  std::string FR(int tile, Layout& layout); // Format Robber
+  std::string FTN(int tile, Layout& layout); // Format Tile Name
+  std::string FTNum(int tile, Layout& layout); // Format Tile Number
 public:
   explicit StreamView(std::ostream& buffer);
 }; 

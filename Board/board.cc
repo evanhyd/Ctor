@@ -127,8 +127,6 @@ Board::Code Board::EndOfGame() {
       return Code::SUCCESS;
     } else if (input == "no") {
       return Code::END_STAGE;
-    } else {
-      NotifyAll("That wasn't yes or no.\n");
     }
   }
 }
@@ -162,7 +160,7 @@ Board::Code Board::CommandRoll() {
   if (tileNumber != ROBBER_TILE_NUMBER) {
     DistributeResource(tileNumber);
   } else {
-    MoveRobber();
+    ActivateRobber();
   }
 
   return Code::END_STAGE;
@@ -171,7 +169,8 @@ Board::Code Board::CommandRoll() {
 
 //DURING THE TURN
 Board::Code Board::CommandBoard() {
-
+  NotifyAll("D====>");
+  return Code::SUCCESS;
 }
 
 Board::Code Board::CommandStatus() {
@@ -193,11 +192,9 @@ Board::Code Board::CommandBuildRoad() {
     cin.ignore('\n');
     cin.clear();
   }
-
   if (auto error = shop->BuildRoad(CurrentBuilder(), *layout, roadIndex); error) {
     NotifyAll(error.value());
   }
-
   return Code::SUCCESS;
 }
 
@@ -208,11 +205,9 @@ Board::Code Board::CommandBuildRes() {
     cin.ignore('\n');
     cin.clear();
   }
-
   if (auto error = shop->BuildResidence(CurrentBuilder(), *layout, residenceIndex, CurrentBuilder().OwnedResidenceCount() < 2); error) {
     NotifyAll(error.value());
   }
-
   return Code::SUCCESS;
 }
 
@@ -223,11 +218,9 @@ Board::Code Board::CommandImprove() {
     cin.ignore('\n');
     cin.clear();
   }
-
   if (auto error = shop->ImproveResidence(CurrentBuilder(), *layout, residenceIndex); error) {
     NotifyAll(error.value());
   }
-
   return Code::SUCCESS;
 }
 
@@ -239,18 +232,20 @@ Board::Code Board::CommandTrade() {
   for_each(colour.begin(), colour.end(), [](char& c) { c = tolower(c); });
   colour[0] = toupper(colour[0]);
 
-  //try to find the builder
+  //validate the builder
   const auto& builders = layout->GetBuilders();
   int receiverIndex = distance(builders.begin(), find_if(builders.begin(), builders.end(), [&](const auto& b) {
     return ColourEnum::Name(b->GetColour()) == colour;
   }));
 
-  if (receiverIndex >= builders.size()) {
+  if (receiverIndex < 0 || receiverIndex >= int(builders.size())) {
     NotifyAll("Can't trade with a non-existed builder!\n");
+    return Code::SUCCESS;
   }
 
   if (receiverIndex == playerIndex) {
     NotifyAll("Can't trade with yourself!\n");
+    return Code::SUCCESS;
   }
 
   //parse the trading offer
@@ -304,16 +299,15 @@ Board::Code Board::CommandHelp() {
 
 
 // HELPER FUNCTION
-
 void Board::DistributeResource(int tileNumber) {
   const auto& builders = layout->GetBuilders();
   const auto& tiles = layout->GetTiles();
   const auto& robber = layout->GetRobber();
 
   //record the old resources
-  map<int, Inventory> oldInventory;
-  for (int i = 0; i < int(builders.size()); ++i) {
-    oldInventory.insert({i, builders[i]->GetInventory()});
+  vector<Inventory> oldInventories;
+  for (const auto& builder : builders) {
+    oldInventories.push_back(builder->GetInventory());
   }
 
   //activate resources distribution
@@ -323,9 +317,8 @@ void Board::DistributeResource(int tileNumber) {
 
       //apply resource modifier if the robber is on it
       if (robber.GetTileIndex() == i) {
-        resource = robber.ApplyModifier(resource);
+        robber.ApplyResourceModifier(resource);
       }
-
       tiles[i]->NotifyAll(resource);
     }
   }
@@ -335,15 +328,15 @@ void Board::DistributeResource(int tileNumber) {
   //therefore it is not reliable to report the resource through the obserer.
   bool hasGained = false;
   for (int i = 0; i < int(builders.size()); ++i) {
-    
-    if (Inventory difference = builders[i]->GetInventory() - oldInventory[i]; difference.GetTotal() != 0) {
+    if (Inventory difference = builders[i]->GetInventory() - oldInventories[i]; difference.GetTotal() != 0) {
       hasGained = true;
 
       //generate gained information
       string gained = Format("Builder %v gained:\n", ColourEnum::Name(builders[i]->GetColour()));
       for (int type = ResourceEnum::Type::BRICK; type < ResourceEnum::COUNT; ++type) {
-        if (difference.GetResource(ResourceEnum::Type(type)) != 0) {
-          gained += Format("%v %v\n", difference, ResourceEnum::Name(ResourceEnum::Type(type)));
+        ResourceEnum::Type v = ResourceEnum::Type(type);
+        if (difference.GetResource(v) != 0) {
+          gained += Format("%v %v\n", difference.GetResource(v), ResourceEnum::Name(v));
         }
       }
       NotifyAll(gained);
@@ -353,6 +346,10 @@ void Board::DistributeResource(int tileNumber) {
   if (!hasGained) {
     NotifyAll("No builders gained resources.");
   }
+}
+
+void Board::ActivateRobber() {
+
 }
 
 Inventory Board::ParseResourceToInventory(string resource) {

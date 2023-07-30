@@ -55,6 +55,7 @@ class Board : Subject<std::string> {
   Code CommandHelp();
 
   void DistributeResource(int tileNumber);
+  void ActivateRobber();
 	Inventory ParseResourceToInventory(std::string resource);
   bool HasWon();
 

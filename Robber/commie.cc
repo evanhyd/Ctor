@@ -1,11 +1,18 @@
 #include "commie.h"
+#include "../Inventory/inventory.h"
+#include "../Builder/builder.h"
 
 using namespace std;
 
-Inventory Commie::ApplyModifier(const Inventory& inventory) const {
-  return inventory * 2;
+void Commie::ApplyResourceModifier(Inventory& inventory) const {
+  inventory *= 2;
 }
 
-explicit Commie::operator string() const {
+void Commie::ApplyBuilderModifier(Builder& builder) const {
+
+}
+
+
+Commie::operator string() const {
 	return "AOC";
 }

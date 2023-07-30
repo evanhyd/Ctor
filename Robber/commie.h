@@ -3,10 +3,14 @@
 #include "robber.h"
 #include <string>
 
+class Inventory;
+class Builder;
+
 class Commie : public Robber {
   using Robber::Robber;
 
-  virtual Inventory ApplyModifier(const Inventory& inventory) const = 0;
-  virtual explicit operator std::string() const = 0;
+  virtual void ApplyResourceModifier(Inventory& inventory) const override;
+  virtual void ApplyBuilderModifier(Builder& builder) const override;
+  virtual explicit operator std::string() const override;
 };
 #endif

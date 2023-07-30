@@ -18,13 +18,13 @@ class Shop {
 	virtual Error CanBuildRoad(Builder& builder, Layout& layout, int roadIndex) const;
 	virtual Error CanBuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement = false) const;
 	virtual Error CanImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const;
-	virtual Error CanTrade(Builder& instigator, Builder& subject, const Inventory& trade) const;
+	virtual Error CanTrade(Builder& instigator, Builder& subject, const Inventory& offer1, const Inventory& offer2) const;
 
 public:
 	Error BuildRoad(Builder& builder, Layout& layout, int roadIndex) const;
 	Error BuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement = false) const;
 	Error ImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const;
-	Error Trade(Builder& instigator, Builder& subject, const Inventory& trade) const;
+	Error Trade(Builder& instigator, Builder& subject, const Inventory& offer1, const Inventory& offer2) const;
 
   virtual ~Shop();
 

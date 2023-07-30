@@ -60,11 +60,11 @@ ColourEnum::Type Builder::GetColour() const {
 }
 
 string Builder::GetStats() const {
-  return Format("%v has %v building points, {}.", GetColour(), GetVictoryPoints(), string(inventory));
+  return Format("%v has %v building points, %v.\n", ColourEnum::Name(GetColour()), GetVictoryPoints(), string(inventory));
 }
 
 string Builder::GetResidences() const {
-  string buildings = GetColour() + " has built:\n"; 
+  string buildings = ColourEnum::Name(GetColour()) + " has built:\n"; 
   for(const auto& [index, property] : residences) {
     buildings += to_string(index) + ' ' + string(*(property))[1] + "\n"; 
   }

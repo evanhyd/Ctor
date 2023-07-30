@@ -4,11 +4,14 @@
 #include "../Dice/loaded_dice.h"
 #include "../Dice/fair_dice.h"
 #include <exception>
-#include <utility>
+#include <random>
+#include <cmath>
+
 
 using namespace std;
 
-Board::Board() : layout(make_unique<Layout>()), shop(make_unique<Shop>()) {}
+Board::Board() : layout(make_unique<Layout>()), shop(make_unique<Shop>()) {
+}
 
 void Board::InitializeCommandMapping() {
   beginTurnCMD["load"] = bind(&Board::CommandLoad, this);
@@ -28,6 +31,7 @@ void Board::InitializeCommandMapping() {
 }
 
 Builder& Board::CurrentBuilder() {
+  Assert(0 <= playerIndex && playerIndex < int(layout->GetBuilders().size()), Format("invalid builder index %v", playerIndex));
   return *layout->GetBuilders()[playerIndex];
 }
 
@@ -36,24 +40,38 @@ void Board::ImportBoard() {
 }
 
 void Board::Play() {
-  while (true) {
-    BeginGame();
+  InitializeCommandMapping();
 
-    for (const int PLAYER_COUNT = layout->GetBuilders().size();; playerIndex = (playerIndex + 1)%PLAYER_COUNT) {
+  while (true) {
+    layout->GenerateLayout(69420);
+
+    //delete this
+    for (auto& builder : layout->GetBuilders()) {
+      Inventory& inventory = builder->GetInventory();
+      inventory += Inventory(50, 50, 50, 50, 50);
+    }
+
+    BeginGame();
+    const int PLAYER_COUNT = layout->GetBuilders().size();
+    playerIndex = 0;
+    while (true) {
       BeginTurn();
       if (DuringTurn() == Code::END_STAGE) {
         break;
       }
+      playerIndex = (playerIndex + 1)%PLAYER_COUNT;
     }
 
     if (EndOfGame() == Code::END_STAGE) {
       break;
     }
+    layout = make_unique<Layout>(); //reset the board
   }
 }
 
 void Board::BeginGame() {
   const auto& builders = layout->GetBuilders();
+  CommandBoard();
   for (playerIndex = 0; playerIndex < int(builders.size()); ++playerIndex) {
     NotifyAll(Format("Builder %v, where do you want to build a basement?\n", ColourEnum::Name(CurrentBuilder().GetColour())));
 
@@ -76,6 +94,8 @@ void Board::BeginGame() {
 }
 
 void Board::BeginTurn() {
+  CommandBoard();
+
   NotifyAll(Format("Builder %v's turn.\n%v", ColourEnum::Name(CurrentBuilder().GetColour()), CurrentBuilder().GetStats()));
 
   while (true) {
@@ -87,7 +107,7 @@ void Board::BeginTurn() {
         break;
       }
     } catch (const bad_function_call& error) {
-      NotifyAll("Invalid command.");
+      NotifyAll("Invalid command.\n");
     } catch (const exception& error) {
       Assert(false, error.what());
     };
@@ -108,7 +128,7 @@ Board::Code Board::DuringTurn() {
         break;
       }
     } catch (const bad_function_call& error) {
-      NotifyAll("Invalid command.");
+      NotifyAll("Invalid command.\n");
     } catch (const exception& error) {
       Assert(false, error.what());
     };
@@ -136,12 +156,15 @@ Board::Code Board::CommandLoad() {
   while (true) {
     NotifyAll("Input a roll between 2 and 12: ");
     int load;
-    if ((cin >> load) && 2 <= load && load <= 12) {
-      CurrentBuilder().SetDice(LoadedDice::dice[load]);
-      break;
+    if (cin >> load) {
+      if (2 <= load && load <= 12) {
+        CurrentBuilder().SetDice(LoadedDice::dice[load]);
+        break;        
+      }
+    } else {
+      cin.ignore('\n');
+      cin.clear();
     }
-    cin.ignore('\n');
-    cin.clear();
     NotifyAll("Invalid roll.\n");
   }
   return Code::SUCCESS;
@@ -153,8 +176,9 @@ Board::Code Board::CommandFair() {
 }
 
 Board::Code Board::CommandRoll() {
-  auto& tiles = layout->GetTiles();
+  // auto& tiles = layout->GetTiles();
   const int tileNumber = CurrentBuilder().Roll();
+  NotifyAll(Format("rolled %v\n", tileNumber)); 
 
   constexpr int ROBBER_TILE_NUMBER = 7;
   if (tileNumber != ROBBER_TILE_NUMBER) {
@@ -169,7 +193,7 @@ Board::Code Board::CommandRoll() {
 
 //DURING THE TURN
 Board::Code Board::CommandBoard() {
-  NotifyAll("D====>");
+  NotifyAll(*layout);
   return Code::SUCCESS;
 }
 
@@ -249,9 +273,15 @@ Board::Code Board::CommandTrade() {
   }
 
   //parse the trading offer
-  Inventory trade = ParseResourceToInventory(give) + ParseResourceToInventory(take);
-  if (trade.GetTotal() != 2) {
-    NotifyAll("Invalid trade. It must contain two distinct types of resources.\n");
+  Inventory giveInventory = ParseResourceToInventory(give);
+  Inventory takeInventory = ParseResourceToInventory(take);
+  if (giveInventory.GetTotal() == 0  || takeInventory.GetTotal() == 0) {
+    NotifyAll("Invalid resource type.\n");
+    return Code::SUCCESS;
+  }
+
+  if (give == take) {
+    NotifyAll("Can't trade the same resource.\n");
     return Code::SUCCESS;
   }
 
@@ -261,12 +291,13 @@ Board::Code Board::CommandTrade() {
     give, take, ColourEnum::Name(builders[receiverIndex]->GetColour())));
 
   NotifyAll("> ");
-  string response;
-  cin >> response;
+  string response; cin >> response;
   for_each(response.begin(), response.end(), [](char& c) { c = tolower(c); });
   if (response == "yes") {
-    if (auto error = shop->Trade(*builders[playerIndex], *builders[receiverIndex], trade); error) {
+    if (auto error = shop->Trade(*builders[playerIndex], *builders[receiverIndex], giveInventory, takeInventory); error) {
       NotifyAll(error.value());
+    } else {
+      NotifyAll("Traded successfully\n");
     }
   }
   return Code::SUCCESS;
@@ -285,6 +316,7 @@ Board::Code Board::CommandHelp() {
   string("Valid commands:\n") +
   "board\n" +
   "status\n" +
+  "residences\n" +
   "build-road <edge#>\n" +
   "build-res <housing#>\n" +
   "improve <housing#>\n" +
@@ -349,12 +381,13 @@ void Board::DistributeResource(int tileNumber) {
 }
 
 void Board::ActivateRobber() {
-  //todo 
+  return ;
+
+  //everyone with >= 10 resources lose half resources 
   layout->GetRobber().ApplyBuilderModifier(layout->GetBuilders(), CurrentBuilder());
-  //how do we notify 
 
 
-  //prompting builder for new 
+  //prompting builder for new position 
   NotifyAll(Format("Choose where to place the %v\n", string(layout->GetRobber()))); 
   int newRobberPosition;
   cin >> newRobberPosition; 
@@ -363,11 +396,83 @@ void Board::ActivateRobber() {
     return; 
   }
 
+  //moving robber to new location 
+  layout->GetRobber().MoveToTile(newRobberPosition); 
+
+  //getting all nearby owners of that residence 
+  std::vector<Builder*> nearbyBuilders; 
+  const auto& nearbyResidences = layout->GetAdjacentResidencesByTile(newRobberPosition);   
+  for(auto nearbyResidence : nearbyResidences){
+    if(Builder* owner = layout->GetResidences()[nearbyResidence]->GetOwner(); owner && owner != &CurrentBuilder()){
+      nearbyBuilders.push_back(owner);  
+    }
+  }
+
+  //no one to steal from 
+  if(nearbyBuilders.empty()){
+    NotifyAll(Format("Builder %v has no builders to steal from.\n", CurrentBuilder().GetColour())); 
+    return; 
+  }
+
+  //list out other builders to steal from 
+  NotifyAll(Format("Builder %v can choose to steal from ", CurrentBuilder().GetColour()));
+  for(int i = 0; i < nearbyBuilders.size(); ++i){
+    if(i == nearbyBuilders.size() - 1){
+      NotifyAll(Format("%v\n", nearbyBuilders[i]->GetColour())); 
+    }
+    NotifyAll(Format("%v, ", nearbyBuilders[i]->GetColour())); 
+  }
+  NotifyAll(Format("Choose a builder to steal from.\n")); 
+
+  //takes in colour of builder to steal from 
+  string colour; 
+  while(true){
+    cin >> colour; 
+    if(any_of(nearbyBuilders.begin(), nearbyBuilders.end(), 
+      [&](Builder* builder) { return to_string(builder->GetColour()) == colour; })){
+      break;  
+    }
+    cin.ignore('\n'); 
+    cin.clear(); 
+  }
+
+
+  //steal from builder  
+  for(Builder* builder : nearbyBuilders){
+    if(to_string(builder->GetColour()) == colour){
+      
+      //there is nothing to steal  
+      if(builder->GetInventory().GetTotal() == 0){
+        break; 
+      }
+
+      //getting type of resource to steal 
+      int randomNumber = GetRandom(0, builder->GetInventory().GetTotal());
+      int total = 0; 
+      int type = ResourceEnum::Type::BRICK;
+      for (; type < ResourceEnum::COUNT; ++type) {
+        ResourceEnum::Type v = ResourceEnum::Type(type);
+        total += builder->GetInventory().GetResource(v);
+        if(randomNumber <= total){
+          break; 
+        }
+      }
+
+      //stealing that type of resource
+      
+
+      break; 
+    }
+  }
   
+  //now check colour against builder 
+  //iterate through all builder and check 
 
+  //question: can you steal from yourself? 
+  //Builder <colour1> can choose to steal from [builders].
 
-  //code for placing moving the robber 
-  //some robber moveto functionality 
+  //tileindex how to get the vertices from a tile? 
+
 }
 
 Inventory Board::ParseResourceToInventory(string resource) {
@@ -388,4 +493,11 @@ Inventory Board::ParseResourceToInventory(string resource) {
 
 bool Board::HasWon() {
   return CurrentBuilder().GetVictoryPoints() >= 10;
+}
+
+int Board::GetRandom(int lower, int higher){
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_real_distribution<float> dist(lower, higher + 1);
+  return floor(dist(mt));
 }

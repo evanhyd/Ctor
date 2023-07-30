@@ -126,24 +126,32 @@ void Layout::GenerateTiles(unsigned seed) {
   */
 
   //generate the tile numbers
-  constexpr int TILE_COUNT = 19;
-  vector<int> tileNums(TILE_COUNT);
-  tileNums[0] = 7;
-  tileNums[1] = 2;
-  tileNums[2] = 12;
-  const vector<int> candidates = {3, 4, 5, 6, 8, 9, 10, 11};
-
+  const vector<int> candidates = {3, 4, 5, 6, 8, 9, 10, 11, 3, 4, 5, 6, 8, 9, 10, 11};
+  vector<int> tileNums = {7, 2, 12};
   default_random_engine engine(seed);
-  sample(candidates.begin(), candidates.end(), tileNums.begin() + 3, TILE_COUNT - 3, engine);
+  sample(candidates.begin(), candidates.end(), back_inserter(tileNums), candidates.size(), engine);
   shuffle(tileNums.begin() + 1, tileNums.end(), engine);
   
   //assign tile numbers to tiles, then shuffle the physical structure order
   tiles.push_back(make_unique<ParkTile>(tileNums[0]));
-  tiles.push_back(make_unique<WifiTile>(tileNums[1])); tiles.push_back(make_unique<WifiTile>(tileNums[2])); tiles.push_back(make_unique<WifiTile>(tileNums[3]));
-  tiles.push_back(make_unique<HeatTile>(tileNums[4])); tiles.push_back(make_unique<HeatTile>(tileNums[5])); tiles.push_back(make_unique<HeatTile>(tileNums[6]));
-  tiles.push_back(make_unique<BrickTile>(tileNums[7])); tiles.push_back(make_unique<BrickTile>(tileNums[8])); tiles.push_back(make_unique<BrickTile>(tileNums[9])); make_unique<BrickTile>(tileNums[10]),
-  tiles.push_back(make_unique<EnergyTile>(tileNums[11])); tiles.push_back(make_unique<EnergyTile>(tileNums[12])); tiles.push_back(make_unique<EnergyTile>(tileNums[13])); make_unique<EnergyTile>(tileNums[14]),
-  tiles.push_back(make_unique<GlassTile>(tileNums[15])); tiles.push_back(make_unique<GlassTile>(tileNums[16])); tiles.push_back(make_unique<GlassTile>(tileNums[17])); make_unique<GlassTile>(tileNums[18]),
+  tiles.push_back(make_unique<WifiTile>(tileNums[1])); 
+  tiles.push_back(make_unique<WifiTile>(tileNums[2])); 
+  tiles.push_back(make_unique<WifiTile>(tileNums[3]));
+  tiles.push_back(make_unique<HeatTile>(tileNums[4])); 
+  tiles.push_back(make_unique<HeatTile>(tileNums[5])); 
+  tiles.push_back(make_unique<HeatTile>(tileNums[6]));
+  tiles.push_back(make_unique<BrickTile>(tileNums[7])); 
+  tiles.push_back(make_unique<BrickTile>(tileNums[8])); 
+  tiles.push_back(make_unique<BrickTile>(tileNums[9])); 
+  tiles.push_back(make_unique<BrickTile>(tileNums[10]));
+  tiles.push_back(make_unique<EnergyTile>(tileNums[11])); 
+  tiles.push_back(make_unique<EnergyTile>(tileNums[12])); 
+  tiles.push_back(make_unique<EnergyTile>(tileNums[13])); 
+  tiles.push_back(make_unique<EnergyTile>(tileNums[14]));
+  tiles.push_back(make_unique<GlassTile>(tileNums[15])); 
+  tiles.push_back(make_unique<GlassTile>(tileNums[16]));
+  tiles.push_back(make_unique<GlassTile>(tileNums[17]));
+  tiles.push_back(make_unique<GlassTile>(tileNums[18])); 
   shuffle(tiles.begin(), tiles.end(), engine);
 }
 
@@ -173,15 +181,6 @@ void Layout::GenerateRobber() {
   robber = make_unique<Geese>(parkTileIndex);
 }
 
-void Layout::SetUpConnection() {
-  //make residences subscribe to tiles
-  for (int index = 0; index < int(tiles.size()); ++index) {
-    for (int residenceIndex : GetAdjacentResidencesByTile(index)) {
-      tiles[index]->Attach(residences[residenceIndex].get());
-    }
-  }
-}
-
 /**
   Generate random layout provided by the seed.
 */
@@ -191,7 +190,20 @@ void Layout::GenerateLayout(unsigned seed) {
   GenerateResidences();
   GenerateBuilders();
   GenerateRobber();
-  SetUpConnection();
+
+  for (auto& tile : tiles) {
+    Log("%v %v\n", tile->GetTileType(), tile->GetNumber());
+  }
+
+  for (auto& road : roads) {
+    Log("%v\n", string(*road));
+  }
+
+  for (auto& residence : residences) {
+    Log("%v\n", string(*residence));
+  }
+
+  Log("%v\n", string(*robber));
 }
 
 /**

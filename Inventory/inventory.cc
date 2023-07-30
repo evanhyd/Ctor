@@ -35,7 +35,7 @@ Inventory& Inventory::operator*=(int multiplier) {
   return *this;
 }
 
-Inventory operator+(Inventory inv1, Inventory inv2) {
+Inventory operator+(Inventory inv1, const Inventory& inv2) {
   inv1 += inv2;
   return inv1;
 }

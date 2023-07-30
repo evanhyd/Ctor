@@ -8,7 +8,7 @@
 #include "../../Building/residence_property.h"
 #include "../../Building/building.h"
 #include "../../Tile/tile.h"
-#include "../Robber/geese.h"
+#include "../../Robber/robber.h"
 
 class Layout : public Subject<std::string> {
 protected:
@@ -24,7 +24,6 @@ protected:
   virtual void GenerateResidences();
   virtual void GenerateBuilders();
   virtual void GenerateRobber();
-  virtual void SetUpConnection();
   
 public:
   //define the physical structure of a layout

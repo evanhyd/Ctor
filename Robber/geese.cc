@@ -7,7 +7,7 @@
 using namespace std;
 
 Inventory Geese::GetRandomHalfInventory(Inventory& inventory) const {
-
+  return Inventory(0,0,0,0,0);//to do later
 }
 
 void Geese::ApplyResourceModifier(Inventory& inventory) const {

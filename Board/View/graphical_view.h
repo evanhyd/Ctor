@@ -6,8 +6,7 @@
 class Layout;
 
 class GraphicalView : public View {
-  virtual void RenderImpl(Layout& layout) override;
-  virtual void Notify(const std::string& data) override;
+  virtual void RenderImpl(const Layout& layout) override; 
   
   using View::View;
 };

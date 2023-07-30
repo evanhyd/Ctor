@@ -1,11 +1,14 @@
 #include <iostream>
 #include <memory>
 #include "Board/board.h"
+#include "Board/View/stream_view.h"
 
 using namespace std;
 
 int main() {
-  unique_ptr<Board> board = make_unique<Board>();
-  board->Play();
+  StreamView view{std::cout};
+  Board board{};
+  board.Attach(&view);
+  board.Play();
   return 0;
 }

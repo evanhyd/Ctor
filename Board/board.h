@@ -12,7 +12,7 @@
 
 class Builder;
 
-class Board : Subject<std::string> {
+class Board : public Subject<std::string, Layout> {
   enum class Code : int {
     SUCCESS,
     END_STAGE,
@@ -24,7 +24,7 @@ class Board : Subject<std::string> {
   int playerIndex;
   //command set should be initialize dynamically
   //so we can add more commands if we are going to do bonus
-  //consider moving it into a commmand class.
+  //consider moving it into a command class.
   std::map<std::string, std::function<Code()>> beginTurnCMD;
   std::map<std::string, std::function<Code()>> duringTurnCMD;
 
@@ -58,6 +58,8 @@ class Board : Subject<std::string> {
   void ActivateRobber();
 	Inventory ParseResourceToInventory(std::string resource);
   bool HasWon();
+
+  int GetRandom(int lower, int higher); 
 
 public:
   void ImportBoard();

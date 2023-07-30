@@ -2,6 +2,7 @@
 #define PRINT_H
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <regex>
 
@@ -19,7 +20,7 @@ std::string Format(const std::string& fmt, const Args&... args) {
   static const regex pattern(R"(%([1-9]\d*)?v)");
 
   ostringstream ss;
-  string parsed;  
+  string parsed;
   const auto& tokenParser = [&](auto&& self, sregex_iterator result, const auto& arg, const auto&... args) {
     if (result == sregex_iterator{}) {
       return;
@@ -27,17 +28,25 @@ std::string Format(const std::string& fmt, const Args&... args) {
 
     size_t width = (*result)[1].length() ? stoi((*result)[1]) : 0;
     ss << arg;
-    string token = ss.str();
-    ss.str("");
-    if (token.size() < width) {
-      token.resize(width, ' ');
+    string token;
+    if (ss.str().size() < width) {
+      token.resize(width - ss.str().size(), ' ');
     }
+    token += ss.str();
+    ss.str("");
     parsed += result->prefix().str() + token;
     if constexpr (sizeof...(args) != 0) {
       self(self, ++result, args...);
+    } else {
+      parsed += result->suffix().str();
     }
   };
-  tokenParser(tokenParser, regex_iterator(fmt.begin(), fmt.end(), pattern), args...);
+
+  if constexpr (sizeof...(args) != 0) {
+    tokenParser(tokenParser, regex_iterator(fmt.begin(), fmt.end(), pattern), args...);
+  } else {
+    parsed = fmt;
+  }
   return parsed;
 }
 
@@ -95,10 +104,8 @@ void Assert(bool condition, const Printable& message, const char* file, const ch
 }
 
 #define _DEBUG
-
 #ifdef _DEBUG
 #define Log(...) std::clog << __func__ << "(" << __LINE__ << "): "; Log(__VA_ARGS__)
-
 #define Assert(...) Assert(__VA_ARGS__, __FILE__, __func__, __LINE__)
 #else 
 #define Log(...) 0

@@ -24,7 +24,6 @@ bool Property::CanUpgradeToNextTier() const {
 
 void Property::Upgrade(Builder& builder) {
   owner = &builder;
-  builder.GetInventory() -= building->GetUpgradeCost();
   building = building->GetUpgradedBuilding();
 }
 

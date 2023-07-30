@@ -9,7 +9,7 @@ void Geese::ApplyResourceModifier(Inventory& inventory) const {
 }
 
 void Geese::ApplyBuilderModifier(Builder& builder) const {
-
+  
 }
 
 Geese::operator string() const {

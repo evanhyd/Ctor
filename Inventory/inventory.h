@@ -22,7 +22,7 @@ class Inventory {
     }
 
     IteratorImpl& operator++() {
-      Assert(index == int(ResourceEnum::Type::COUNT), "incrementing iterator passed the end");
+      Assert(0 <= index && index < int(ResourceEnum::Type::COUNT), "incrementing iterator passed the end");
       ++index;
       return *this;
     }

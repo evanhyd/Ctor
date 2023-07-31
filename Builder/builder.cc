@@ -73,6 +73,7 @@ string Builder::GetResidences() const {
 
 string Builder::SaveData() const {
   string saveData; 
+
   //save data from inventory
   for (const auto& [_, count] : inventory) {
     saveData += to_string(count) + ' ';

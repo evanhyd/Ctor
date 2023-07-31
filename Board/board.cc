@@ -105,7 +105,7 @@ void Board::BeginTurn() {
   while (true) {
     NotifyAll("> ");
     string cmd; cin >> cmd;
-    if (ExecuteCommand(beginTurnCMD, "board") == Command::Code::END_STAGE) {
+    if (ExecuteCommand(beginTurnCMD, cmd) == Command::Code::END_STAGE) {
       break;
     }
   }

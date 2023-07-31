@@ -71,7 +71,7 @@ void CommandRoll::DistributeResource(int tileNumber){
   }
 
   if (!hasGained) {
-    board.NotifyAll("No builders gained resources.");
+    board.NotifyAll("No builders gained resources.\n");
   }
 }
 

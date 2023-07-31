@@ -28,7 +28,7 @@ void Property::Upgrade(Builder& builder) {
 }
 
 Property::operator string() const {
-  return (owner ? ColourEnum::Name(owner->GetColour()) : "") + string(*building).substr(0, 1);
+  return (owner ? ColourEnum::Name(owner->GetColour()).substr(0, 1) : "") + string(*building).substr(0, 1);
 }
 
 Property::Property(std::unique_ptr<Building> building)

@@ -96,7 +96,8 @@ SaveLoadable::Error Builder::LoadData(const string& data) {
   return {};
 }
 
-Builder::Builder(ColourEnum::Type colour) : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
+Builder::Builder(ColourEnum::Type colour)
+  : SaveLoadable(), colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
   Assert(dice, "dice is null");
 }
 

@@ -18,6 +18,6 @@ SaveLoadable::Error LoadData(const std::string& data) {
   return {};
 }
 
-Robber::Robber(int index) : index(index) {}
+Robber::Robber(int index) : SaveLoadable(), index(index) {}
 
 Robber::~Robber() {}

@@ -40,7 +40,7 @@ public:
   std::string GetResidences() const;
 
   virtual std::string SaveData() const override;
-  virtual Error LoadData(const std::string& data) override;
+  virtual SaveLoadable::Error LoadData(const std::string& data) override;
   
   explicit Builder(ColourEnum::Type colour);
   virtual ~Builder();

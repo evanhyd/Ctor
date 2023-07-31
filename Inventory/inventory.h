@@ -4,25 +4,27 @@
 #include <valarray>
 #include <string>
 #include "resource_enum.h"
+#include "../Utility/print.h"
 
 class Inventory {
   std::valarray<int> resources;
 
-  template <typename ReturnType>
+  template <typename ContainerType, typename ReturnType>
   class IteratorImpl {
-    std::valarray<int>& resources;
+    ContainerType& resources;
     int index;
 
-    IteratorImpl(std::valarray<int>& resources, int index) : resources(resources), index(index) {}
+    IteratorImpl(ContainerType& resources, int index) : resources(resources), index(index) {}
 
   public:
-    std::pair<ResourceEnum::Type, ReturnType> operator*() {
+    std::pair<ResourceEnum::Type, ReturnType&> operator*() {
       return { ResourceEnum::Type(index), resources[index] };
     }
 
     IteratorImpl& operator++() {
-      Assert(index == ResourceEnum::Type::COUNT, "incrementing iterator passed the end");
+      Assert(index == int(ResourceEnum::Type::COUNT), "incrementing iterator passed the end");
       ++index;
+      return *this;
     }
 
     bool operator==(const IteratorImpl& other) const {
@@ -37,8 +39,8 @@ class Inventory {
   };
 
 public:
-  using Iterator = IteratorImpl<int&>;
-  using ConstIterator = IteratorImpl<const int&>;
+  using Iterator = IteratorImpl<std::valarray<int>, int>;
+  using ConstIterator = IteratorImpl<const std::valarray<int>, const int>;
 
   explicit Inventory(int brick, int energy, int glass, int heat, int wifi);
   explicit Inventory(ResourceEnum::Type type, int count); 

@@ -42,7 +42,7 @@ public:
   Robber& GetRobber() const;
 
   virtual std::string SaveData() const override; 
-  virtual Error LoadData(const std::string& data);
+  virtual SaveLoadable::Error LoadData(const std::string& data);
 
 	explicit Layout();
   virtual ~Layout();

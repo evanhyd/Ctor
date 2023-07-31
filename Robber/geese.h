@@ -13,6 +13,6 @@ class Geese : public Robber {
 	virtual void ApplyBoardModifier(Board& board) const override;
   virtual explicit operator std::string() const override;
 
-  constexpr int RESOURCE_LIMIT = 10;
+  static constexpr int RESOURCE_LIMIT = 10;
 };
 #endif

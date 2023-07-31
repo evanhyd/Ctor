@@ -18,8 +18,8 @@ public:
   int GetTileIndex() const;
   void MoveToTile(int tileIndex);
 
-  virtual std::string SaveData() const;
-	virtual Error LoadData(const std::string& data);
+  virtual std::string SaveData() const override;
+  virtual SaveLoadable::Error LoadData(const std::string& data) override;
 
   virtual void ApplyResourceModifier(Inventory& inventory) const = 0;
   virtual void ApplyBoardModifier(Board& board) const = 0;

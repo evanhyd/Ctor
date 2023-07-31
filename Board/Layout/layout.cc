@@ -7,8 +7,8 @@
 #include "../../Tile/park_tile.h"
 #include "../../Building/Road/vacant_road.h"
 #include "../../Building/Residence/vacant_land.h"
-#include "../../Builder/human_builder.h"
 #include "../../Robber/geese.h"
+#include "../../Builder/builder.h"
 #include <random>
 #include <chrono>
 
@@ -172,7 +172,7 @@ void Layout::GenerateResidences() {
 void Layout::GenerateBuilders() {
   constexpr int BUILDER_COUNT = 4;
   for (int i = 0; i < BUILDER_COUNT; ++i) {
-    builders.push_back(make_unique<HumanBuilder>(ColourEnum::Type(i)));
+    builders.push_back(make_unique<Builder>(ColourEnum::Type(i)));
   }
 }
 

@@ -41,7 +41,7 @@ public:
   int GetPlayerIndex();
   
   virtual std::string SaveData() const;
-  virtual Error LoadData(const std::string& data);
+  virtual SaveLoadable::Error LoadData(const std::string& data);
 
   void ImportBoard();
 	void Play();

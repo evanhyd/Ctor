@@ -4,14 +4,13 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "../../Observer/subject.h"
 #include "../../Building/residence_property.h"
 #include "../../Building/building.h"
 #include "../../Tile/tile.h"
 #include "../../Robber/robber.h"
 #include "../../SaveLoadable/save_loadable.h"
 
-class Layout : public Subject<std::string>, public SaveLoadable {
+class Layout : public SaveLoadable {
 protected:
   std::vector<std::unique_ptr<Tile>> tiles;
 	std::vector<std::unique_ptr<Property>> roads; 

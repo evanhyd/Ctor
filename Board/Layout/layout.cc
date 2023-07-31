@@ -251,6 +251,6 @@ SaveLoadable::Error Layout::LoadData(const std::string& data) {
   return {};
 }
 
-Layout::Layout() {}
+Layout::Layout() : Subject<string>(), SaveLoadable() {}
 
 Layout::~Layout() {}

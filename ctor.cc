@@ -9,7 +9,8 @@ using namespace std;
 int main() {
   try {
     StreamView view{std::cout};
-    Board board{};
+    bool enable_bank_trades = true;
+    Board board(enable_bank_trades);
     board.Attach(&view);
     board.Play();
   } catch(const std::exception& error) {

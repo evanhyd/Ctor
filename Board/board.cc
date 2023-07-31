@@ -13,13 +13,14 @@
 #include "Command/command_build_res.h"
 #include "Command/command_improve.h"
 #include "Command/command_trade.h"
+#include "Command/command_bank_trade.h"
 #include "Command/command_next.h"
 #include "Command/command_save.h"
 #include "Command/command_help.h"
 
 using namespace std;
 
-Board::Board() : playerIndex(0), layout(make_unique<Layout>()), shop(make_unique<Shop>()) {}
+Board::Board(bool enable_bank_trades) : enable_bank_trades(enable_bank_trades), playerIndex(0), layout(make_unique<Layout>()), shop(make_unique<Shop>()) {}
 
 void Board::InitializeCommandMapping() {
   beginTurnCMD.insert({"load", make_unique<CommandLoad>(*this)});
@@ -36,6 +37,9 @@ void Board::InitializeCommandMapping() {
   duringTurnCMD.insert({"next", make_unique<CommandNext>(*this)}); 
   duringTurnCMD.insert({"save", make_unique<CommandSave>(*this)}); 
   duringTurnCMD.insert({"help", make_unique<CommandHelp>(*this)}); 
+  if (enable_bank_trades) {
+    duringTurnCMD.insert({"bank-trade", make_unique<CommandBankTrade>(*this)});
+  }
 }
 
 Command::Code Board::ExecuteCommand(const Commands& commands, const std::string& cmd) {

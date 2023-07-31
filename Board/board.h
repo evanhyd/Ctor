@@ -39,6 +39,7 @@ public:
   Layout& GetLayout();
   Shop& GetShop();
   int GetPlayerIndex();
+  bool enable_bank_trades;
   
   virtual std::string SaveData() const;
   virtual SaveLoadable::Error LoadData(const std::string& data);
@@ -46,7 +47,7 @@ public:
   void ImportBoard();
 	void Play();
   
-	Board();
+	Board(bool enable_bank_trades);
 };
 
 #endif

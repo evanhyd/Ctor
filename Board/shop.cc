@@ -139,10 +139,10 @@ Shop::Error Shop::CanImproveResidence(Builder& builder, Layout& layout, int resi
 
 Shop::Error Shop::CanTrade(Builder& instigator, Builder& subject, const Inventory& offer1, const Inventory& offer2) const {
   if (!instigator.GetInventory().CanAfford(offer1)) {
-    return Format("Builder %v does not have enough resources", ColourEnum::Name(instigator.GetColour()));
+    return Format("Builder %v does not have enough resources\n", ColourEnum::Name(instigator.GetColour()));
   }
   if (!subject.GetInventory().CanAfford(offer2)) {
-    return Format("Builder %v does not have enough resources", ColourEnum::Name(subject.GetColour()));
+    return Format("Builder %v does not have enough resources\n", ColourEnum::Name(subject.GetColour()));
   }
   return {};
 }
@@ -189,6 +189,14 @@ Shop::Error Shop::Trade(Builder& instigator, Builder& subject, const Inventory& 
   }
   instigator.GetInventory() += offer2 - offer1; 
   subject.GetInventory() += offer1 - offer2; 
+  return {}; 
+}
+
+Shop::Error Shop::BankTrade(Builder& instigator, const Inventory& offer) const {
+  if (!instigator.GetInventory().CanAfford(offer)) {
+    return Format("Builder %v does not have enough resources\n", ColourEnum::Name(instigator.GetColour()));
+  }
+  instigator.GetInventory() -= offer;; 
   return {}; 
 }
 

@@ -25,6 +25,7 @@ public:
 	Error BuildResidence(Builder& builder, Layout& layout, int residenceIndex, bool initialPlacement = false) const;
 	Error ImproveResidence(Builder& builder, Layout& layout, int residenceIndex) const;
 	Error Trade(Builder& instigator, Builder& subject, const Inventory& offer1, const Inventory& offer2) const;
+	Error BankTrade(Builder& instigator, const Inventory& offer) const;
 
   virtual ~Shop();
 

@@ -5,6 +5,10 @@
 using namespace std;
 
 Command::Code CommandHelp::operator()() {
+  string additional_commands = "";
+  if (board.enable_bank_trades) {
+    additional_commands += "bank-trade <give> <take>\n";
+  }
   board.NotifyAll(
     string("Valid commands:\n") +
     "board\n" +
@@ -16,7 +20,8 @@ Command::Code CommandHelp::operator()() {
     "trade <colour> <give> <take>\n" +
     "next\n" +
     "save <file>\n" +
-    "help\n"
+    "help\n" + 
+    additional_commands
   );
   return Code::SUCCESS;
 }

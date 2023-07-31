@@ -12,11 +12,11 @@ protected:
 public:
   int GetNumber() const;
   virtual Inventory GetResource() const = 0;
-	virtual std::string GetTileType() const = 0;
+  virtual std::string GetTileType() const = 0;
 
   explicit operator std::string() const;
   
-	explicit Tile(int tileNumber); 
-	virtual ~Tile();
+  explicit Tile(int tileNumber); 
+  virtual ~Tile();
 };
 #endif

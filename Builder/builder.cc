@@ -65,10 +65,35 @@ string Builder::GetStats() const {
 
 string Builder::GetResidences() const {
   string buildings = ColourEnum::Name(GetColour()) + " has built:\n"; 
-  for(const auto& [index, property] : residences) {
-    buildings += to_string(index) + ' ' + string(*(property))[1] + "\n"; 
+  for(const auto& [index, residence] : residences) {
+    buildings += Format("%v %v\n", index, string(*residence)[1]);
   }
   return buildings; 
+}
+
+string Builder::SaveData() const {
+  string saveData; 
+  //save data from inventory
+  for (const auto& [_, count] : inventory) {
+    saveData += to_string(count) + ' ';
+  }
+
+  //save data for roads 
+  saveData += "r "; 
+  for(const auto& [index, _] : roads) {
+    saveData += to_string(index) + " "; 
+  }
+
+  //save data for residences
+  saveData += "h "; 
+  for(const auto& [index, residence] : residences) {
+    saveData += Format("%v %v ", index, string(*residence)[1]); 
+  }
+  return saveData; 
+}
+
+SaveLoadable::Error Builder::LoadData(const string& data) {
+  return {};
 }
 
 Builder::Builder(ColourEnum::Type colour) : colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {

@@ -2,23 +2,30 @@
 #define ROBBER_H
 
 #include <string>
+#include <vector>
+#include <memory>
+#include "../SaveLoadable/save_loadable.h"
 
 class Inventory;
 class Builder;
+class Board;
 
-class Robber {
+class Robber : public SaveLoadable {
 protected:
-	int index;
+  int index;
 
 public:
-	int GetTileIndex() const;
-	void MoveToTile(int tileIndex);
+  int GetTileIndex() const;
+  void MoveToTile(int tileIndex);
+
+  virtual std::string SaveData() const;
+	virtual Error LoadData(const std::string& data);
 
   virtual void ApplyResourceModifier(Inventory& inventory) const = 0;
-  virtual void ApplyBuilderModifier(const std::vector<std::unique_ptr<Builder>>& allBuilders, Builder& currentBuilder) const = 0;
+  virtual void ApplyBoardModifier(Board& board) const = 0;
   virtual explicit operator std::string() const = 0;
 
-	explicit Robber(int index);
-	virtual ~Robber();
+  explicit Robber(int index);
+  virtual ~Robber();
 };
 #endif

@@ -51,29 +51,6 @@ std::string Format(const std::string& fmt, const Args&... args) {
 }
 
 /**
-  A formatted print function using Format().
-
-  Usage:
-  Print("I have %5v marks in %v class", 69, "cs");
-*/
-template <typename... Args>
-void Print(const std::string& fmt, const Args&... args) {
-  std::cout << Format(fmt, args...);
-}
-
-/**
-  A formatted print function using Format(), except the stream are redirected to std::cerr.
-  Should be preferred over Print() when used for debugging since the buffer is always flushed.
-
-  Usage:
-  PrintErr("I have %5v marks in %v class", 69, "cs");
-*/
-template <typename... Args>
-void PrintErr(const std::string& fmt, const Args&... args) {
-  std::cerr << Format(fmt, args...);
-}
-
-/**
   A formatted print function using Format() that always prefix by the function name and line number.
   Log() only gets called if _DEBUG flag is defined.
   Should be preferred for stats logging that does not appear in the release build.
@@ -83,7 +60,7 @@ void PrintErr(const std::string& fmt, const Args&... args) {
 */
 template <typename... Args>
 void Log(const std::string& fmt, const Args&... args) {
-  std::clog << Format(fmt, args...);
+  std::cerr << Format(fmt, args...);
 }
 
 /**
@@ -103,9 +80,13 @@ void Assert(bool condition, const Printable& message, const char* file, const ch
   }
 }
 
+std::string ToUpperCase(std::string str);
+std::string ToLowerCase(std::string str);
+std::string ToPascalCase(std::string str);
+
 #define _DEBUG
 #ifdef _DEBUG
-#define Log(...) std::clog << __func__ << "(" << __LINE__ << "): "; Log(__VA_ARGS__)
+#define Log(...) std::cerr << __func__ << "(" << __LINE__ << "): "; Log(__VA_ARGS__)
 #define Assert(...) Assert(__VA_ARGS__, __FILE__, __func__, __LINE__)
 #else 
 #define Log(...) 0

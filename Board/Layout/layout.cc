@@ -190,20 +190,6 @@ void Layout::GenerateLayout(unsigned seed) {
   GenerateResidences();
   GenerateBuilders();
   GenerateRobber();
-
-  for (auto& tile : tiles) {
-    Log("%v %v\n", tile->GetTileType(), tile->GetNumber());
-  }
-
-  for (auto& road : roads) {
-    Log("%v\n", string(*road));
-  }
-
-  for (auto& residence : residences) {
-    Log("%v\n", string(*residence));
-  }
-
-  Log("%v\n", string(*robber));
 }
 
 /**
@@ -214,7 +200,7 @@ bool Layout::ImportLayout(const string& fileName) {
 }
 
 const std::vector<std::unique_ptr<Tile>>& Layout::GetTiles() const{
-  return tiles; 
+  return tiles;
 }
 
 const std::vector<std::unique_ptr<Property>>& Layout::GetRoads() const {
@@ -231,6 +217,38 @@ const std::vector<std::unique_ptr<Builder>>& Layout::GetBuilders() const {
 
 Robber& Layout::GetRobber() const {
   return *robber;
+}
+
+string Layout::SaveData() const {
+
+  //builders
+  string saveData;
+  for (const auto& builder : builders) {
+    saveData += builder->SaveData() + '\n';
+  }
+
+  static const map<std::string, int> tileType = {
+    {"BRICK", 0}, 
+    {"ENERGY", 1}, 
+    {"GLASS", 2}, 
+    {"HEAT", 3}, 
+    {"WIFI", 4}, 
+    {"PARK", 5}, 
+  }; 
+
+  //tiles
+  for(const auto& tile : tiles) {
+    saveData += Format("%v %v ", tileType.find(tile->GetTileType())->second, tile->GetNumber());
+  }
+  saveData += '\n';
+
+  //robber
+  saveData += robber->SaveData();
+  return saveData;
+}
+
+SaveLoadable::Error Layout::LoadData(const std::string& data) {
+  return {};
 }
 
 Layout::Layout() {}

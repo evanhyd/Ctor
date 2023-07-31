@@ -7,14 +7,12 @@
 #include "../Inventory/inventory.h"
 #include "../Building/property.h"
 #include "../Building/residence_property.h"
+#include "../SaveLoadable/save_loadable.h"
 #include "colour_enum.h"
 
 class Dice; 
 
-class Builder {
-public:
-  
-
+class Builder : public SaveLoadable {
 protected:
   ColourEnum::Type colour;
   Inventory inventory;
@@ -40,8 +38,11 @@ public:
   ColourEnum::Type GetColour() const;
   std::string GetStats() const;
   std::string GetResidences() const;
+
+  virtual std::string SaveData() const override;
+  virtual Error LoadData(const std::string& data) override;
   
-  explicit Builder(ColourEnum::Type colour); 
+  explicit Builder(ColourEnum::Type colour);
   virtual ~Builder();
 };
 

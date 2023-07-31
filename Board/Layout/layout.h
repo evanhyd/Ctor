@@ -9,8 +9,9 @@
 #include "../../Building/building.h"
 #include "../../Tile/tile.h"
 #include "../../Robber/robber.h"
+#include "../../SaveLoadable/save_loadable.h"
 
-class Layout : public Subject<std::string> {
+class Layout : public Subject<std::string>, public SaveLoadable {
 protected:
   std::vector<std::unique_ptr<Tile>> tiles;
 	std::vector<std::unique_ptr<Property>> roads; 
@@ -39,6 +40,9 @@ public:
   const std::vector<std::unique_ptr<ResidenceProperty>>& GetResidences() const;
   const std::vector<std::unique_ptr<Builder>>& GetBuilders() const;
   Robber& GetRobber() const;
+
+  virtual std::string SaveData() const override; 
+  virtual Error LoadData(const std::string& data);
 
 	explicit Layout();
   virtual ~Layout();

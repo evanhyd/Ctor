@@ -20,6 +20,3 @@ Inventory VacantLand::GenerateResource(Inventory inventory) const {
   return Inventory(0, 0, 0, 0, 0);
 }
 
-VacantLand::operator std::string() const {
-  return "VACANT";
-}

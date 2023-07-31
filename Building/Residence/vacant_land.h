@@ -11,7 +11,6 @@ class VacantLand : public Residence {
   virtual std::unique_ptr<Building> GetUpgradedBuilding() const override;
   virtual int GetVictoryPoints() const override;
   virtual Inventory GenerateResource(Inventory inventory) const override;
-  explicit virtual operator std::string() const override;
 
   using Residence::Residence;
 };

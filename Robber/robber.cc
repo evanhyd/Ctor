@@ -14,7 +14,7 @@ string Robber::SaveData() const {
   return to_string(index);
 }
 
-SaveLoadable::Error LoadData(const std::string& data) {
+SaveLoadable::Error Robber::LoadData(const std::string& data) {
   return {};
 }
 

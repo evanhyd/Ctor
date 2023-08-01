@@ -3,12 +3,13 @@
 
 #include <string>
 #include <optional>
+#include <fstream>
 
 class SaveLoadable {
 public:
   using Error = std::optional<std::string>;
   virtual std::string SaveData() const = 0;
-  virtual SaveLoadable::Error LoadData(const std::string& data) = 0;
+  virtual void LoadData(std::ifstream& file) = 0;
 
   virtual ~SaveLoadable();
 };

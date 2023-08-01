@@ -88,8 +88,8 @@ void CommandRoll::ActivateRobber() {
 
     int tileIndex;
     while (!(cin >> tileIndex)) {
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
       cin.clear();
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
     if (tileIndex == robber.GetTileIndex()) {

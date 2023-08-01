@@ -11,8 +11,8 @@ Command::Code CommandImprove::operator()() {
   int residenceIndex;
   if (!(cin >> residenceIndex)) {
     residenceIndex = -1;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
   if (auto error = board.GetShop().ImproveResidence(board.CurrentBuilder(), board.GetLayout(), residenceIndex); error) {
     board.NotifyAll(error.value());

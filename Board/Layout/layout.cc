@@ -1,10 +1,5 @@
 #include "layout.h"
-#include "../../Tile/brick_tile.h"
-#include "../../Tile/energy_tile.h"
-#include "../../Tile/glass_tile.h"
-#include "../../Tile/heat_tile.h"
-#include "../../Tile/wifi_tile.h"
-#include "../../Tile/park_tile.h"
+#include "../../Tile/tile_factory.h"
 #include "../../Building/Road/vacant_road.h"
 #include "../../Building/Residence/vacant_land.h"
 #include "../../Robber/geese.h"
@@ -126,32 +121,22 @@ void Layout::GenerateTiles(unsigned seed) {
   */
 
   //generate the tile numbers
-  const vector<int> candidates = {3, 4, 5, 6, 8, 9, 10, 11, 3, 4, 5, 6, 8, 9, 10, 11};
-  vector<int> tileNums = {7, 2, 12};
+  vector<int> tileNums = {7, 2, 12, 3, 4, 5, 6, 8, 9, 10, 11, 3, 4, 5, 6, 8, 9, 10, 11};
   default_random_engine engine(seed);
-  sample(candidates.begin(), candidates.end(), back_inserter(tileNums), candidates.size(), engine);
   shuffle(tileNums.begin() + 1, tileNums.end(), engine);
   
-  //assign tile numbers to tiles, then shuffle the physical structure order
-  tiles.push_back(make_unique<ParkTile>(tileNums[0]));
-  tiles.push_back(make_unique<WifiTile>(tileNums[1])); 
-  tiles.push_back(make_unique<WifiTile>(tileNums[2])); 
-  tiles.push_back(make_unique<WifiTile>(tileNums[3]));
-  tiles.push_back(make_unique<HeatTile>(tileNums[4])); 
-  tiles.push_back(make_unique<HeatTile>(tileNums[5])); 
-  tiles.push_back(make_unique<HeatTile>(tileNums[6]));
-  tiles.push_back(make_unique<BrickTile>(tileNums[7])); 
-  tiles.push_back(make_unique<BrickTile>(tileNums[8])); 
-  tiles.push_back(make_unique<BrickTile>(tileNums[9])); 
-  tiles.push_back(make_unique<BrickTile>(tileNums[10]));
-  tiles.push_back(make_unique<EnergyTile>(tileNums[11])); 
-  tiles.push_back(make_unique<EnergyTile>(tileNums[12])); 
-  tiles.push_back(make_unique<EnergyTile>(tileNums[13])); 
-  tiles.push_back(make_unique<EnergyTile>(tileNums[14]));
-  tiles.push_back(make_unique<GlassTile>(tileNums[15])); 
-  tiles.push_back(make_unique<GlassTile>(tileNums[16]));
-  tiles.push_back(make_unique<GlassTile>(tileNums[17]));
-  tiles.push_back(make_unique<GlassTile>(tileNums[18])); 
+  //create tiles, then shuffle the physical structure order
+  const vector<TileFactory::Type> types = {
+    TileFactory::PARK,
+    TileFactory::WIFI, TileFactory::WIFI, TileFactory::WIFI,
+    TileFactory::HEAT, TileFactory::HEAT, TileFactory::HEAT,
+    TileFactory::BRICK, TileFactory::BRICK, TileFactory::BRICK, TileFactory::BRICK,
+    TileFactory::ENERGY, TileFactory::ENERGY, TileFactory::ENERGY, TileFactory::ENERGY,
+    TileFactory::GLASS, TileFactory::GLASS, TileFactory::GLASS, TileFactory::GLASS,
+  };
+  for (int i = 0; i < int(types.size()); ++i) {
+    tiles.push_back(TileFactory::CreateTile(types[i], tileNums[i]));
+  }
   shuffle(tiles.begin(), tiles.end(), engine);
 }
 
@@ -182,7 +167,7 @@ void Layout::GenerateRobber() {
 }
 
 /**
-  Generate random layout provided by the seed.
+  Generate layout by seeding
 */
 void Layout::GenerateLayout(unsigned seed) {
   GenerateTiles(seed);
@@ -190,13 +175,6 @@ void Layout::GenerateLayout(unsigned seed) {
   GenerateResidences();
   GenerateBuilders();
   GenerateRobber();
-}
-
-/**
-  Import existed layout from file.
-*/
-bool Layout::ImportLayout(const string& fileName) {
-  return false;
 }
 
 const std::vector<std::unique_ptr<Tile>>& Layout::GetTiles() const{
@@ -227,16 +205,8 @@ string Layout::SaveData() const {
     saveData += builder->SaveData() + '\n';
   }
 
-  static const map<std::string, int> tileType = {
-    {"BRICK", 0}, 
-    {"ENERGY", 1}, 
-    {"GLASS", 2}, 
-    {"HEAT", 3}, 
-    {"WIFI", 4}, 
-    {"PARK", 5}, 
-  }; 
-
   //tiles
+  static const map<std::string, int> tileType = { {"BRICK", 0}, {"ENERGY", 1}, {"GLASS", 2}, {"HEAT", 3}, {"WIFI", 4}, {"PARK", 5} }; 
   for(const auto& tile : tiles) {
     saveData += Format("%v %v ", tileType.find(tile->GetTileType())->second, tile->GetNumber());
   }
@@ -247,8 +217,65 @@ string Layout::SaveData() const {
   return saveData;
 }
 
-SaveLoadable::Error Layout::LoadData(const std::string& data) {
-  return {};
+void Layout::LoadData(std::ifstream& file) {
+
+  // peek into the file without extracting the state
+  const int len = file.tellg();
+  vector<stringstream> data;
+  for (string line; getline(file, line); ) {
+    data.push_back(stringstream(std::move(line)));
+  }
+  file.seekg(len ,ios_base::beg);
+
+  Assert(data.size() == 1 || data.size() == 6, Format("invalid data size %v: %v", data.size(), [&]() {
+    string dump, line;
+    for (auto& ss : data) while(getline(ss, line)) { dump += line + '\n'; }
+    return dump;
+  }()));
+
+  //construct tiles
+  for (int type, tileNumber; data.back() >> type >> tileNumber;) {
+    tiles.push_back(TileFactory::CreateTile(TileFactory::Type(type), tileNumber));
+  }
+
+  GenerateRoads();
+  GenerateResidences();
+  GenerateBuilders();
+  GenerateRobber();
+  
+  for (int i = 0; i < int(data.size()) - 2; ++i) {
+
+    //filter out the inventory and road letter 'r'
+    string c;
+    while (data[i] >> c) if (c == "r") break;
+
+    //construct roads
+    while (data[i] >> c) {
+      if (c == "h") break;
+      roads[stoi(c)]->Upgrade(*builders[i]);
+    }
+    
+    //construct residences
+    int residenceIndex;
+    char type;
+    while (data[i] >> residenceIndex >> type) {
+      while(string(*(residences[residenceIndex]))[1] != type) {
+        residences[residenceIndex]->Upgrade(*builders[i]); 
+      }
+
+      //connect the observer
+      for (int tileIndex : GetAdjacentTilesByResidence(residenceIndex)) {
+        tiles[tileIndex]->Attach(residences[residenceIndex].get());
+      }
+    }
+  }
+ 
+  for (int i = 0; i < int(data.size()) - 2; ++i) {
+    builders[i]->LoadData(file);
+  }
+  
+  //construct robber
+  robber->LoadData(file);  
 }
 
 Layout::Layout() : SaveLoadable() {}

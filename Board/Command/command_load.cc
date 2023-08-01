@@ -15,8 +15,8 @@ Command::Code CommandLoad::operator()() {
         break;        
       }
     } else {
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
       cin.clear();
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
     board.NotifyAll("Invalid roll.\n");
   }

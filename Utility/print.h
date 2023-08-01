@@ -51,7 +51,7 @@ std::string Format(const std::string& fmt, const Args&... args) {
 }
 
 /**
-  A formatted print function using Format() that always prefix by the function name and line number.
+  A formatted print function using Format() that always prefix by the file name and line number.
   Log() only gets called if _DEBUG flag is defined.
   Should be preferred for stats logging that does not appear in the release build.
 
@@ -86,7 +86,7 @@ std::string ToPascalCase(std::string str);
 
 #define _DEBUG
 #ifdef _DEBUG
-#define Log(...) std::cerr << __func__ << "(" << __LINE__ << "): "; Log(__VA_ARGS__)
+#define Log(...) std::cerr << __FILE__ << "(" << __LINE__ << "): "; Log(__VA_ARGS__)
 #define Assert(...) Assert(__VA_ARGS__, __FILE__, __func__, __LINE__)
 #else 
 #define Log(...) 0

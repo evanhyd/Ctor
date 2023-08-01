@@ -8,23 +8,21 @@
 using namespace std;
 
 Command::Code CommandSave::operator()() {
-  board.NotifyAll("enter a save filename\n"); 
+  board.NotifyAll("Enter a save filename: ");
+  string filename;
+  cin >> filename;
+  filename += ".sv";
 
-  std::ofstream savedFile; 
-  std::string rootPath = std::filesystem::current_path().generic_string(); 
-  while(true){
-    std::string filename; 
-    cin >> filename; 
-    savedFile.open(rootPath + "/SavedGame/" + filename + ".txt");  
-    if(!savedFile.is_open()){
-      board.NotifyAll(Format("invalid save filename: %v\n", filename)); 
-      continue; 
-    }
-    savedFile << board.SaveData(); 
-    break; 
+  try {
+    ofstream savedFile;
+    savedFile.exceptions(ofstream::failbit | ofstream::badbit);
+    savedFile.open(filesystem::current_path() / filename);
+    savedFile << board.SaveData() << endl;
+    savedFile.close();
+  } catch(const ofstream::failure& error) {
+    board.NotifyAll(error.what());
+    board.NotifyAll("\nfailed to save the board state due to system error\n please make sure your filename is valid\n");
   }
-
-  savedFile.close(); 
-
+  
   return Code::SUCCESS;
 }

@@ -32,7 +32,6 @@ public:
   const std::vector<int>& GetAdjacentTilesByResidence(int residenceIndex) const;
 
   void GenerateLayout(unsigned seed);
-  bool ImportLayout(const std::string& fileName);
 
   const std::vector<std::unique_ptr<Tile>>& GetTiles() const;
   const std::vector<std::unique_ptr<Property>>& GetRoads() const;
@@ -41,7 +40,7 @@ public:
   Robber& GetRobber() const;
 
   virtual std::string SaveData() const override; 
-  virtual SaveLoadable::Error LoadData(const std::string& data);
+  virtual void LoadData(std::ifstream& file) override;
 
 	explicit Layout();
   virtual ~Layout();

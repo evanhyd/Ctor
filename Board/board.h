@@ -20,9 +20,9 @@ protected:
   Commands beginTurnCMD;
   Commands duringTurnCMD;
 
-  int playerIndex;
 	std::unique_ptr<Layout> layout;
 	std::unique_ptr<Shop> shop;
+  int playerIndex;
 
   virtual void InitializeCommandMapping();
   Command::Code ExecuteCommand(const Commands& commands, const std::string& cmd);
@@ -42,12 +42,11 @@ public:
   bool enable_bank_trades;
   
   virtual std::string SaveData() const;
-  virtual SaveLoadable::Error LoadData(const std::string& data);
+  virtual void LoadData(std::ifstream& file) override;
 
-  void ImportBoard();
-	void Play();
+	void Play(bool freshStart);
   
-	Board(bool enable_bank_trades);
+	Board(std::unique_ptr<Layout> layout, std::unique_ptr<Shop> shop, bool enable_bank_trades);
 };
 
 #endif

@@ -11,8 +11,8 @@ Command::Code CommandBuildRoad::operator()() {
   int roadIndex;
   if (!(cin >> roadIndex)) {
     roadIndex = -1;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
   if (auto error = board.GetShop().BuildRoad(board.CurrentBuilder(), board.GetLayout(), roadIndex); error) {
     board.NotifyAll(error.value());

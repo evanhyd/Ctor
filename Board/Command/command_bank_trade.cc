@@ -44,7 +44,7 @@ Inventory CommandBankTrade::ParseResourceToInventory(string& resource) {
     {"wifi", Inventory(0, 0, 0, 0, 1)},
   };
 
-  for_each(resource.begin(), resource.end(), [](char& c) {c = tolower(c);});
+  resource = ToLowerCase(resource);
   if (auto result = mapping.find(resource); result != mapping.end()) {
     return result->second;
   }

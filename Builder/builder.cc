@@ -93,8 +93,11 @@ string Builder::SaveData() const {
   return saveData; 
 }
 
-SaveLoadable::Error Builder::LoadData(const string& data) {
-  return {};
+void Builder::LoadData(ifstream& file) {
+  int brick, energy, glass, heat, wifi;
+  string type;
+  file >> brick >> energy >> glass >> heat >> wifi;
+  inventory = Inventory(brick, energy, glass, heat, wifi);
 }
 
 Builder::Builder(ColourEnum::Type colour)

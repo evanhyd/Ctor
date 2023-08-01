@@ -14,8 +14,10 @@ string Robber::SaveData() const {
   return to_string(index);
 }
 
-SaveLoadable::Error Robber::LoadData(const std::string& data) {
-  return {};
+void Robber::LoadData(std::ifstream& file) {
+  int robberIndex; 
+  file >> robberIndex; 
+  MoveToTile(robberIndex);
 }
 
 Robber::Robber(int index) : SaveLoadable(), index(index) {}

@@ -17,10 +17,13 @@
 #include "Command/command_next.h"
 #include "Command/command_save.h"
 #include "Command/command_help.h"
+#include <chrono>
 
 using namespace std;
 
-Board::Board(bool enable_bank_trades) : enable_bank_trades(enable_bank_trades), playerIndex(0), layout(make_unique<Layout>()), shop(make_unique<Shop>()) {}
+Board::Board(unique_ptr<Layout> layout, unique_ptr<Shop> shop, bool enable_bank_trades)
+  : layout(std::move(layout)), shop(std::move(shop)), playerIndex(0), enable_bank_trades(enable_bank_trades) {
+}
 
 void Board::InitializeCommandMapping() {
   beginTurnCMD.insert({"load", make_unique<CommandLoad>(*this)});
@@ -51,31 +54,37 @@ Command::Code Board::ExecuteCommand(const Commands& commands, const std::string&
   }
 }
 
-void Board::Play() {
+void Board::Play(bool freshStart) {
   InitializeCommandMapping();
 
   while (true) {
-    layout->GenerateLayout(69420);
 
     //initial building
-    BeginGame();
+    if (freshStart) {
+      BeginGame();
+      playerIndex = 0;
+    }
 
     //main game loop
     const int PLAYER_COUNT = layout->GetBuilders().size();
     constexpr bool P = false;
     constexpr bool NP = true;
-    for (playerIndex = 0; P != NP ;playerIndex = (playerIndex + 1)%PLAYER_COUNT) {
-      BeginTurn();
+    while (P != NP) {
+      if (freshStart) {
+        BeginTurn();
+        freshStart = false;
+      }
       if (!DuringTurn()) {
         break;
       }
+      playerIndex = (playerIndex + 1)%PLAYER_COUNT;
     }
 
     //ending game
     if (!EndOfGame()) {
       break;
     }
-    layout = make_unique<Layout>(); //reset the board
+    layout->GenerateLayout(chrono::system_clock().now().time_since_epoch().count());
   }
 }
 
@@ -134,7 +143,7 @@ bool Board::EndOfGame() {
   while (true) {
     NotifyAll("Would you like to play again? yes/no\n> ");
     string input; cin >> input;
-    for_each(input.begin(), input.end(), [](char& c) {c = tolower(c);});
+    input = ToLowerCase(input);
     if (input == "yes") {
       return true;
     } else if (input == "no") {
@@ -165,13 +174,10 @@ int Board::GetPlayerIndex(){
 } 
 
 std::string Board::SaveData() const {
-  return Format("%v\n%v\n", to_string(playerIndex), layout->SaveData()); 
-} 
-
-SaveLoadable::Error Board::LoadData(const std::string& data) {
-  return {};
+  return Format("%v\n%v", to_string(playerIndex), layout->SaveData()); 
 }
 
-void Board::ImportBoard() {
-
+void Board::LoadData(ifstream& file) {
+  file >> playerIndex;
+  layout->LoadData(file);
 }

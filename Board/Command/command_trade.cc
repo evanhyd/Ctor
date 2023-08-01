@@ -12,9 +12,8 @@ Command::Code CommandTrade::operator()() {
   string colour, give, take;
   cin >> colour >> give >> take;
 
-  //convert colour to camel case
-  for_each(colour.begin(), colour.end(), [](char& c) { c = tolower(c); });
-  colour[0] = toupper(colour[0]);
+  //convert colour to pascal case
+  colour = ToPascalCase(colour);
 
   //validate the builder
   const auto& builders = board.GetLayout().GetBuilders();
@@ -52,7 +51,7 @@ Command::Code CommandTrade::operator()() {
 
   board.NotifyAll("> ");
   string response; cin >> response;
-  for_each(response.begin(), response.end(), [](char& c) { c = tolower(c); });
+  response = ToLowerCase(response);
   if (response == "yes") {
     if (auto error = board.GetShop().Trade(*builders[board.GetPlayerIndex()], *builders[receiverIndex], giveInventory, takeInventory); error) {
       board.NotifyAll(error.value());

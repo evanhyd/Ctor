@@ -10,9 +10,9 @@ using namespace std;
 Command::Code CommandBuildRes::operator()() {
   int residenceIndex;
   if (!(cin >> residenceIndex)) {
-    residenceIndex = -1;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    residenceIndex = -1;
   }
 
   if (auto error = board.GetShop().BuildResidence(board.CurrentBuilder(), board.GetLayout(), residenceIndex, board.CurrentBuilder().OwnedResidenceCount() < 2); error) {

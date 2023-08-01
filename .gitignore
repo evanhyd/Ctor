@@ -5,3 +5,5 @@ ctor
 win_build.sh
 *.exe
 *.sv
+*.pdf
+*.zip

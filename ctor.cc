@@ -81,6 +81,8 @@ int main(int argc, char* argv[]) {
   board.Attach(&view);
 
   try {
+    cin.exceptions(ios::eofbit);
+
     bool freshStart = true;
     if (loadType == SEED_BASED) {
       // normal seeding
@@ -88,8 +90,10 @@ int main(int argc, char* argv[]) {
 
     } else {
       ifstream file;
-      file.exceptions(ios::badbit | ios::failbit);
+      file.exceptions(ios::badbit);
       file.open(fileName);
+
+      Log("opened %v\n", fileName);
 
       if (loadType == GAME_SAVE_FILE) {
         board.LoadData(file);
@@ -102,6 +106,8 @@ int main(int argc, char* argv[]) {
     board.Play(freshStart);
 
   } catch(const std::exception& error) {
+    ofstream file("backup.sv", ios::trunc);
+    file << board.SaveData() << endl;
     cerr << error.what() << endl;
     exit(1);
   }

@@ -84,7 +84,7 @@ std::string ToUpperCase(std::string str);
 std::string ToLowerCase(std::string str);
 std::string ToPascalCase(std::string str);
 
-#define _DEBUG
+// #define _DEBUG
 #ifdef _DEBUG
 #define Log(...) std::cerr << __FILE__ << "(" << __LINE__ << "): "; Log(__VA_ARGS__)
 #define Assert(...) Assert(__VA_ARGS__, __FILE__, __func__, __LINE__)

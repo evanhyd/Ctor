@@ -5,12 +5,11 @@ using namespace std;
 
 Inventory::Inventory(int brick, int energy, int glass, int heat, int wifi) 
   : resources{brick, energy, glass, heat, wifi} {
-  Assert((resources >= 0).min(), Format("negative inventory resources %v %v %v %v %v", brick, energy, glass, heat, wifi));
+
 }
 
 Inventory::Inventory(ResourceEnum::Type type, int count) : resources{0, 0, 0, 0, 0} {
-  resources[type] += count; 
-  Assert((count >= 0), Format("negative amount(%v) of %v resources", count, ResourceEnum::Name(type))); 
+  resources[type] += count;
 } 
 
 int Inventory::GetResource(ResourceEnum::Type type) const {

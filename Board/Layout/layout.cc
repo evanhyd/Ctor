@@ -170,6 +170,11 @@ void Layout::GenerateRobber() {
   Generate layout by seeding
 */
 void Layout::GenerateLayout(unsigned seed) {
+  tiles.clear();
+  roads.clear();
+  residences.clear();
+  builders.clear();
+  robber.reset();
   GenerateTiles(seed);
   GenerateRoads();
   GenerateResidences();
@@ -217,24 +222,19 @@ string Layout::SaveData() const {
   return saveData;
 }
 
-void Layout::LoadData(std::ifstream& file) {
-
-  // peek into the file without extracting the state
-  const int len = file.tellg();
-  vector<stringstream> data;
-  for (string line; getline(file, line); ) {
-    data.push_back(stringstream(std::move(line)));
+void Layout::LoadData(std::istream& file) {
+  vector<stringstream> data, data2;
+  for (string line; getline(file, line);) {
+    Log("loaded layout data %v\n", line);
+    data.push_back(stringstream(line));
+    data2.push_back(stringstream(std::move(line)));
   }
-  file.seekg(len ,ios_base::beg);
-
-  Assert(data.size() == 1 || data.size() == 6, Format("invalid data size %v: %v", data.size(), [&]() {
-    string dump, line;
-    for (auto& ss : data) while(getline(ss, line)) { dump += line + '\n'; }
-    return dump;
-  }()));
+  
 
   //construct tiles
-  for (int type, tileNumber; data.back() >> type >> tileNumber;) {
+  int tileDataIndex = (data.size() == 1 ? 0 : data.size() - 2);
+  for (int type, tileNumber; data[tileDataIndex] >> type >> tileNumber;) {
+    Log("tile type %v, number %v\n", type, tileNumber);
     tiles.push_back(TileFactory::CreateTile(TileFactory::Type(type), tileNumber));
   }
 
@@ -243,8 +243,8 @@ void Layout::LoadData(std::ifstream& file) {
   GenerateBuilders();
   GenerateRobber();
   
+  Log("construct residence\n");
   for (int i = 0; i < int(data.size()) - 2; ++i) {
-
     //filter out the inventory and road letter 'r'
     string c;
     while (data[i] >> c) if (c == "r") break;
@@ -252,7 +252,9 @@ void Layout::LoadData(std::ifstream& file) {
     //construct roads
     while (data[i] >> c) {
       if (c == "h") break;
-      roads[stoi(c)]->Upgrade(*builders[i]);
+      int roadIndex = stoi(c);
+      roads[roadIndex]->Upgrade(*builders[i]);
+      builders[i]->AddRoad(roadIndex, *roads[roadIndex]);
     }
     
     //construct residences
@@ -262,6 +264,7 @@ void Layout::LoadData(std::ifstream& file) {
       while(string(*(residences[residenceIndex]))[1] != type) {
         residences[residenceIndex]->Upgrade(*builders[i]); 
       }
+      builders[i]->AddResidence(residenceIndex, *residences[residenceIndex]);
 
       //connect the observer
       for (int tileIndex : GetAdjacentTilesByResidence(residenceIndex)) {
@@ -269,13 +272,14 @@ void Layout::LoadData(std::ifstream& file) {
       }
     }
   }
- 
-  for (int i = 0; i < int(data.size()) - 2; ++i) {
-    builders[i]->LoadData(file);
+
+  if (data.size() > 1) {
+    Log("construct builder and robber\n");
+    for (int i = 0; i < int(data.size()) - 2; ++i) {
+      builders[i]->LoadData(data2[i]);
+    }
+    robber->LoadData(data.back());
   }
-  
-  //construct robber
-  robber->LoadData(file);  
 }
 
 Layout::Layout() : SaveLoadable() {}

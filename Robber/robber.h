@@ -19,7 +19,7 @@ public:
   void MoveToTile(int tileIndex);
 
   virtual std::string SaveData() const override;
-  virtual void LoadData(std::ifstream& file) override;
+  virtual void LoadData(std::istream& file) override;
 
   virtual void ApplyResourceModifier(Inventory& inventory) const = 0;
   virtual void ApplyBoardModifier(Board& board) const = 0;

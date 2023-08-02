@@ -14,7 +14,7 @@ string Robber::SaveData() const {
   return to_string(index);
 }
 
-void Robber::LoadData(std::ifstream& file) {
+void Robber::LoadData(std::istream& file) {
   int robberIndex; 
   file >> robberIndex; 
   MoveToTile(robberIndex);

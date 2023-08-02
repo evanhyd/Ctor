@@ -16,7 +16,7 @@ Command::Code CommandSave::operator()() {
   try {
     ofstream savedFile;
     savedFile.exceptions(ofstream::failbit | ofstream::badbit);
-    savedFile.open(filesystem::current_path() / filename);
+    savedFile.open(filesystem::current_path() / filename, ios::trunc);
     savedFile << board.SaveData() << endl;
     savedFile.close();
   } catch(const ofstream::failure& error) {

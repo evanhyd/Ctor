@@ -5,7 +5,7 @@ bool Building::CanUpgradeToNextTier() const {
 }
 
 Building::operator std::string() const {
-  return "Building";
+  return " ";
 }
 
 Building::Building() {}

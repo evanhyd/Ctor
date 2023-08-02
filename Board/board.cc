@@ -72,8 +72,10 @@ void Board::Play(bool freshStart) {
     while (P != NP) {
       if (freshStart) {
         BeginTurn();
-        freshStart = false;
+      } else {
+        freshStart = true;
       }
+
       if (!DuringTurn()) {
         break;
       }
@@ -177,7 +179,11 @@ std::string Board::SaveData() const {
   return Format("%v\n%v", to_string(playerIndex), layout->SaveData()); 
 }
 
-void Board::LoadData(ifstream& file) {
-  file >> playerIndex;
+void Board::LoadData(istream& file) {
+  string line;
+  getline(file, line);
+  stringstream ss(line);
+  ss >> playerIndex;
+  Log("loaded player index %v\n", playerIndex);
   layout->LoadData(file);
 }

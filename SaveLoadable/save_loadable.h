@@ -9,7 +9,7 @@ class SaveLoadable {
 public:
   using Error = std::optional<std::string>;
   virtual std::string SaveData() const = 0;
-  virtual void LoadData(std::ifstream& file) = 0;
+  virtual void LoadData(std::istream& file) = 0;
 
   virtual ~SaveLoadable();
 };

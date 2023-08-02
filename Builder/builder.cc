@@ -93,15 +93,15 @@ string Builder::SaveData() const {
   return saveData; 
 }
 
-void Builder::LoadData(ifstream& file) {
+void Builder::LoadData(istream& file) {
   int brick, energy, glass, heat, wifi;
-  string type;
   file >> brick >> energy >> glass >> heat >> wifi;
   inventory = Inventory(brick, energy, glass, heat, wifi);
+  Log("%v\n", string(inventory));
 }
 
 Builder::Builder(ColourEnum::Type colour)
-  : SaveLoadable(), colour(colour), inventory(0, 0, 0, 0, 0), dice{&FairDice::dice} {
+  : SaveLoadable(), colour(colour), inventory(0, 0, 0, 0, 0), dice{&LoadedDice::dice[6]} {
   Assert(dice, "dice is null");
 }
 

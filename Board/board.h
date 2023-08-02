@@ -42,7 +42,7 @@ public:
   bool enable_bank_trades;
   
   virtual std::string SaveData() const;
-  virtual void LoadData(std::ifstream& file) override;
+  virtual void LoadData(std::istream& file) override;
 
 	void Play(bool freshStart);
   
